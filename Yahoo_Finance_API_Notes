@@ -3,6 +3,9 @@
 # First create 
 create table EM (Date text, Open real, High real, Low real, Close real, Volume integer, Adjusted_Close real, constraint pk_EM primary key (Date));
 
+# Delete table called EM
+DROP TABLE EM
+
 .import '/home/badusumilli/CS122-Project-badusumilli-dancassara-lynchc/VWO_EM.csv' EM
 
 # Potentially use for getting Yahoo Finance price info
