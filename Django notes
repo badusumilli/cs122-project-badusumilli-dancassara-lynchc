@@ -37,3 +37,20 @@ building a form using django:
 1. create a class to add a form, this will use the rest of the classes
 2. using modelform connects the form to a particular class
 3. specify which fields you want to be able to modify
+4. two methods: get and post, post method does more?
+5. post method needs an added html expression to make sure that the file comes from YOUR website, you need to reload the previous page so that the token is created for this to work. 
+6. add a line to reset the form so that it can be used again! 
+
+static files: 
+1. a folder with files that is just sent straight to the user: 
+	images
+	css files
+	javascript files
+	any other cacheable file type that is not changed based on web activity
+2. mysite/static/filename
+3. add the static directory to the base.html so that every page has access to the static files if necessary 
+
+creating a function:
+1. views.py create a function to call
+2. do yer thang
+3. 
