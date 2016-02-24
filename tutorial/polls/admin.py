@@ -1,9 +1,11 @@
+from __future__ import unicode_literals
 from django.contrib import admin
+from .models import Quiz, Question, Choice, Response
+from django.db import models
+from django.utils import timezone
+import datetime
 
-from .models import Question
-
-
-admin.site.register(Question)
+admin.site.register(Quiz)
 
 
 # Register your models here.
