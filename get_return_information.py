@@ -5,7 +5,7 @@ import datetime
 
 #day = datetime.datetime.strptime(date, '%B %d, %Y').strftime('%A')
 TIME_DICT = { '1d': '1', '5d': '5', '3m': '66', '6m': '132', '1y': '252',
-				'5y': '1260'    }
+				'5y': '1260'}
 
 def calc_return_of_portfolio(allocation, time_frame):
 
