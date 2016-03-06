@@ -93,6 +93,9 @@ def retrieve_hist_prices(ticker_list):
 	# http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.to_sql.html
 		dataframe.to_sql(ticker, connection, if_exists='append', index=False)
 
+	connection.commit()
+	connection.close
+
 
 def pull_hist_data(username):
 	url = 'http://us.spindices.com/idsexport/file.xls?hostIdentifier=48190c8c-42c4-46af-8d1a-0cd5db894797&selectedModule=PerformanceGraphView&selectedSubModule=Graph&yearFlag=tenYearFlag&indexId=5532268'
@@ -107,6 +110,9 @@ def drop_tables(ticker_list):
 		c.execute("DROP TABLE IF EXISTS " + ticker)
 		c.execute("DROP TABLE IF EXISTS " + ticker + "_Distributions")
 
+	connection.commit()
+	connection.close
+
 
 def get_min_dates(ticker_list):
 	connection = sqlite3.connect("roboadvisor.db")
@@ -115,6 +121,9 @@ def get_min_dates(ticker_list):
 	for ticker in ticker_list:
 		x = c.execute("SELECT MIN(DATE) FROM " + ticker +";")
 		print(ticker, x.fetchall()) 
+
+	connection.commit()
+	connection.close
 
 
 
