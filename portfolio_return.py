@@ -66,6 +66,19 @@ CHOOSE_DICT = {
 }
 
 
+ETF_NAMES = {
+	'VTI': 'Vanguard Total Stock Market ETF', 
+	'VBR': 'Vanguard Small-Cap Value ETF',
+	'VEA': 'Vanguard FTSE Developed Markets ETF',   
+	'VWO': 'Vanguard FTSE Emerging Markets ETF',
+	'VSS': 'Vanguard FTSE All-World Ex-US Small Cap ETF', 
+	'VNQ': 'Vanguard REIT ETF',
+	'VNQI': 'Vanguard Global Ex-US Real Estate ETF',		
+	'BND': 'Vanguard Total Bond Market ETF',			
+	'BSV': 'Vanguard Short-Term Bond ETF',			
+	'BNDX': 'Vanguard Total International Bond ETF'	
+	}
+
 def create_potential_portfolios():
 	for years in CHOOSE_DICT.keys():
 		create_table(years)
@@ -204,12 +217,17 @@ def allocation_bar(allocation, save_to = None):
 
 	# fig = plt.figure(figsize = (8,8)) 
 	fig, ax = plt.subplots()
+	# ax = fig.add_axes([0.1, 0.2, 0.7, 0.7])
 	# colors: http://matplotlib.org/examples/color/named_colors.html
-	rects = ax.barh(y_pos, percentages, 0.65, align='center', color = 'skyblue')
 	ax.set_xlabel('Portfolio Percentage (%)')
+	ax.set_ylabel('Vanguard ETF Ticker')
 	ax.set_yticks(y_pos)
 	ax.set_yticklabels(funds)
-	ax.set_title('Your Portfolio Allocation')
+	ax.set_title('Your Portfolio Allocation: ' + allocation)
+	ax.set_xlim(0, 1.1 * max(percentages))
+	ax.set_ylim(-1, len(funds))
+
+	rects = ax.barh(y_pos, percentages, 0.65, align='center', color = 'thistle')
 
 	for rect in rects: 
 		ax.text(rect.get_width() + 0.40, rect.get_y() + rect.get_height()/4., rect.get_width())
@@ -221,20 +239,34 @@ def allocation_bar(allocation, save_to = None):
 		fig.savefig(save_to)
 
 
-def fund_performance_graph(allocation, hist_period, wealth):
+def fund_performance_graph(allocation, hist_period, wealth, save_to = None):
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
 	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF;")
 	prices = pf_prices.fetchall()
-	date_list = [x[0] for x in prices]
+	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
 	price_list = [x[1] * wealth for x in prices]
-	y_pos = np.arange(len(date_list))
+	x_pos = np.arange(len(date_list))
 
-	fig, ax = plt.subplots()
-	rects = ax.bar(y_pos, price_list, 0.65, align='center', color = 'blue')
+	fig = plt.figure(figsize = (8,8))
+	ax = fig.add_axes([0.1, 0.2, 0.85, 0.75])
 
-	plt.show()
+	ax.plot(date_list, price_list, color = 'skyblue')
+	ax.fill_between(date_list, price_list, facecolor='skyblue', alpha = 0.5, lw=0.5)
+
+	ax.set_ylim(min(price_list) - (wealth // 10), max(price_list) + (wealth // 10))
+	ax.set_xlabel('Year')
+	ax.set_ylabel('Portfolio Value ($)')
+	ax.set_title(allocation + " Past " + hist_period[:-1] + "-Year Portfolio Performance")
+
+	ax.text(1000, 2500, 'Value After 10 Years: ' + str(price_list[-1]), fontsize=10)
+
+	if save_to is None: 
+		plt.show()
+	else: 
+		fig.savefig(save_to)
+
 
 
 
