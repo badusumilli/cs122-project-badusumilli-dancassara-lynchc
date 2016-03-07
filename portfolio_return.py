@@ -267,8 +267,63 @@ def fund_performance_graph(allocation, hist_period, wealth, save_to = None):
 	else: 
 		fig.savefig(save_to)
 
+def find_worst_year(allocation, hist_period):
+	connection = sqlite3.connect("roboadvisor.db")
+	c = connection.cursor()
+
+	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF;")
+	prices = pf_prices.fetchall()
+	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
+	price_list = [x[1] for x in prices]
+
+	worst_year_start_date = ''
+	worst_year_end_date = ''
+	worst_year_change = 0
+
+	for date in range(len(date_list) - 251):
+
+		next_year_date = date_list[date] + datetime.timedelta(days = 365)
+		next_year_date = next_year_date.strftime("%Y-%m-%d %H:%M:%S")
+		next_year_price = c.execute("SELECT PF_Price FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF WHERE Date < '" + next_year_date + "' ORDER BY Date DESC LIMIT 1;")
+		next_price = next_year_price.fetchone()[0]
+		
+		if next_price != []: 
+			price_change = (next_price - price_list[date]) / price_list[date]
+			if price_change < worst_year_change: 
+				worst_year_change = price_change
+				worst_year_start_date = date_list[date].strftime("%Y-%m-%d %H:%M:%S")
+				worst_year_end_date = next_year_date
+
+	return worst_year_change, worst_year_start_date, worst_year_end_date
+
+def graph_worst_year(allocation, hist_period, wealth, save_to = None):
+	connection = sqlite3.connect("roboadvisor.db")
+	c = connection.cursor()
+
+	worst_year_change, worst_year_start_date, worst_year_end_date = find_worst_year(allocation, hist_period)
+	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF WHERE Date >= '" + worst_year_start_date + "' AND Date <= '" + worst_year_end_date + "';")
+	prices = pf_prices.fetchall()
+	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
+	price_list = [(x[1] / prices[0][1]) * wealth for x in prices]
+	x_pos = np.arange(len(date_list))
+
+	fig = plt.figure(figsize = (8,8))
+	ax = fig.add_axes([0.1, 0.2, 0.85, 0.75])
+
+	ax.plot(date_list, price_list, color = 'red')
+	ax.fill_between(date_list, price_list, facecolor='red', alpha = 0.5, lw=0.5)
 
 
+	ax.set_ylim(min(price_list) - (wealth // 10), max(price_list) + (wealth // 10))
+	ax.set_xlabel('Year')
+	ax.set_ylabel('Portfolio Value ($)')
+	ax.set_title(allocation + " Worst 12 Month Portfolio Performance")
+	for tick in ax.get_xticklabels():
+		tick.set_rotation(90)
 
+	# ax.text(1000, 2500, 'Value After 10 Years: ' + str(price_list[-1]), fontsize=10)
 
-
+	if save_to is None: 
+		plt.show()
+	else: 
+		fig.savefig(save_to)
