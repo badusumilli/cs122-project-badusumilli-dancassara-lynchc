@@ -19,6 +19,6 @@ from django.contrib import admin
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.home, name='quiz_home'),
-    url(r'^$', 'views.quiz_form', name='quiz_form'),
+    url(r'^$', views.quiz_form, name='quiz_form'),
+    url(r'^$', views.home, name='quiz_home'),   
 ]
