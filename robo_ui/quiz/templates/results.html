@@ -1,0 +1,33 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Portfolio</title>
+        <link rel="stylesheet" type="text/css" href="{% static "/static/main.css" %}" />
+    </head>
+    <body>
+        <div id="header">
+            <h1>Your Investment Portfolio</h1>
+        </div>
+        <div>
+            <a href="https://plot.ly/~badusumilli/20/" target="_blank" title="Your Portfolio Allocation: Aggressive" style="display: block; text-align: center;"><img src="https://plot.ly/~badusumilli/20.png" alt="Your Portfolio Allocation: Aggressive" style="max-width: 100%;width: 1048px;"  width="1048" onerror="this.onerror=null;this.src='https://plot.ly/404.png';" /></a>
+            <script data-plotly="badusumilli:20"  src="https://plot.ly/embed.js" async></script>
+        </div>
+
+        <div class="frame">
+            <form method="get">
+                {% csrf_token %}
+                <table class="form">
+                {{ form }}
+                </table>
+                <input type="submit" value="More Agressive" />
+                <input type="submit" value="Less Agressive" />
+            </form>
+        </div>
+
+        {% if err %}
+        <div class ="error">
+            {{ err|safe }}
+        </div>
+        {% endif %}
+

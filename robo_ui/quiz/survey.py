@@ -133,7 +133,7 @@ def risk_tolerance(args_from_ui):
 	
 	#turn score into classification:
 	if score <= 10:
-		classification = 'Very Conservative'
+		classification = 'Very_Conservative'
 	elif 10 < score <= 20:
 		classification = 'Conservative'
 	elif 20 < score <= 30:
@@ -141,7 +141,7 @@ def risk_tolerance(args_from_ui):
 	elif 30 < score <= 40:
 		classification = 'Aggressive'
 	elif score > 40:
-		classification = 'Very Aggressive'
+		classification = 'Very_Aggressive'
 
 
 	return classification, score

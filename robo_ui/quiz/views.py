@@ -7,7 +7,9 @@ from io import StringIO
 import sys
 import csv
 import os
-# import survey
+from quiz import survey
+from quiz import portfolio_return
+import plotly.plotly as py
 #Homepage when one initially visits the site!
 def home(request):
 	context = {}
@@ -38,8 +40,17 @@ def quiz_form(request):
 			args['q9'] = form.cleaned_data['game_show']
 			args['q10'] = form.cleaned_data['stock_panic']
 			print (args)
-		# try:
-		# 	survey.risk_tolerance(args)
+			try:
+				profile = survey.risk_tolerance(args)
+				print (profile)
+			except Exception as e:
+				print ('exception caught')
+
+
+
+	# allocation = profile[0]
+	# print (allocation)
+	# graph = portfolio_return.allocation_bar_plotly(allocation)
 
 	context['form'] = form
 	return render(request, 'index.html', context)
@@ -152,8 +163,21 @@ class QuizForm(forms.Form):
 		required=True)
 
 
+# class Results(forms.Form):
+# 	allocation_graph = tls.get_embed(https://plot.ly/20/~badusumilli/) 
 
+	# growth_of_wealth = 
+
+	# worst_year =
+
+	# best_year = 
 
 
 def results(request):
+	context = {}
+	res = None
+	
+	return render(request, 'results.html', context)
 	return HttpResponse("This is the page where our results will go!")
+
+
