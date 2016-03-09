@@ -39,7 +39,7 @@ ALLOCATION_DICT = {
 }
 
 # For calculating historical prices of recommended portfolios for 10 years.
-# The ETFs VSS and VNQI did not have 10-year historical prices, so we 
+# The ETFs VSS and VNQI did not have historical prices over 10 years, so we 
 # had to slightly alter historical performance to account for this, 
 # but the changes are not significant for overall portfolio returns
 HISTORICAL_LIST = ['VNQ', 'VBMFX', 'VTI', 'VTMGX', 'VBISX', 'VWO', 'VBR', 'VGTSX']
@@ -143,12 +143,12 @@ def create_graphs(allocation, hist_period, wealth):
 	allocation_bar_plotly(allocation)
 	annualized_return = fund_performance_graph_plotly(allocation, hist_period, wealth)
 	graph_worst_year_plotly(allocation, hist_period, wealth, worst_year_change, worst_year_start_date, worst_year_end_date)
-	best_return graph_best_year_plotly(allocation, hist_period, wealth, best_year_change, best_year_start_date, best_year_end_date)
+	graph_best_year_plotly(allocation, hist_period, wealth, best_year_change, best_year_start_date, best_year_end_date)
 
 	connection.commit()
 	connection.close
 
-	return annualized_return, worst_year_change, best_year_change
+	return annualized_return, worst_year_change, best_year_change, list(ETF_NAMES.values())
 
 
 def create_table(hist_period):
@@ -358,6 +358,7 @@ def find_worst_and_best_year(allocation, hist_period):
 	best_year_end_date = ''
 	best_year_change = 0
 
+	# Don't need to check dates within the past year
 	for date in range(len(date_list) - 251):
 
 		next_year_date = date_list[date] + datetime.timedelta(days = 365)
@@ -365,6 +366,7 @@ def find_worst_and_best_year(allocation, hist_period):
 		next_year_price = c.execute("SELECT PF_Price FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF WHERE Date < '" + next_year_date + "' ORDER BY Date DESC LIMIT 1;")
 		next_price = next_year_price.fetchone()[0]
 		
+		# In case next_price yields no price (shouldn't happen, but possible)
 		if next_price != []: 
 			price_change = ((next_price - price_list[date]) / price_list[date]) * 100
 			if price_change < worst_year_change: 
@@ -447,7 +449,9 @@ def fund_performance_graph_plotly(allocation, hist_period, wealth):
 		wealth: starting money that person can invest (ex: 1000)
 
 	Output: 
-		'User-Portfolio-Performance'
+		'User-Portfolio-Performance': plotly interactive line graph of 
+			person's growth in wealth of recommended allocation over 
+			past hist_period years
 	'''
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
@@ -485,6 +489,26 @@ def fund_performance_graph_plotly(allocation, hist_period, wealth):
 
 
 def graph_worst_year_plotly(allocation, hist_period, wealth, worst_year_change, worst_year_start_date, worst_year_end_date):
+	'''
+	Function to create interative line graph of person's decrease in wealth 
+	over worst 12-month period over past hist_period years using Python 
+	package plotly
+
+	Inputs: 
+		allocation: recommended allocation (ex: 'Aggressive')
+		hist_period: string of years for historical portfolio prices 
+			(ex: '10y')
+		wealth: starting money that person can invest (ex: 1000)
+		worst_year_change: String of percentage (ex: '-1.83%') of loss
+			in portfolio value over worst 12-month period
+		worst_year_start_date: Start date of worst 12-month period
+		worst_year_end_date: End date of worst 12-month period
+
+	Output: 
+		'User-Worst-Year': Interactive plotly line graph of worst 
+			12-month performance of user's wealth with recommended 
+			allocation
+	'''
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
@@ -521,6 +545,26 @@ def graph_worst_year_plotly(allocation, hist_period, wealth, worst_year_change, 
 
 
 def graph_best_year_plotly(allocation, hist_period, wealth, best_year_change, best_year_start_date, best_year_end_date):
+	'''
+	Function to create interative line graph of user's increase in wealth 
+	over best 12-month period over past hist_period years using Python 
+	package plotly
+
+	Inputs: 
+		allocation: recommended allocation (ex: 'Aggressive')
+		hist_period: string of years for historical portfolio prices 
+			(ex: '10y')
+		wealth: starting money that person can invest (ex: 1000)
+		best_year_change: String of percentage (ex: '1.83%') of gain
+			in portfolio value over best 12-month period
+		best_year_start_date: Start date of best 12-month period
+		best_year_end_date: End date of best 12-month period
+
+	Output: 
+		'User-Best-Year': Interactive plotly line graph of best 
+			12-month performance of user's wealth with recommended 
+			allocation
+	'''
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
