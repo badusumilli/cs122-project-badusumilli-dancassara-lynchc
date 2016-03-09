@@ -2,6 +2,15 @@ import datetime
 import sqlite3
 import numpy as np
 import matplotlib.pyplot as plt
+# To install plotly for ipython3: 
+# pip3 install --user plotly
+import plotly.plotly as py
+import plotly.tools as tls
+import plotly.graph_objs as go
+
+# Info found in: https://plot.ly/settings/api
+py.sign_in('badusumilli', 'lop4glzuu1')
+
 
 TIME_DICT = {'1y': 'One', '5y': 'Five', '10y': 'Ten'}
 
@@ -206,40 +215,48 @@ def get_historical_pf_prices(allocation, hist_period):
 	connection.close
 
 
-def allocation_bar(allocation, save_to = None):
-	# http://matplotlib.org/examples/api/barchart_demo.html
-	# http://matplotlib.org/examples/pylab_examples/barchart_demo.html
+def allocation_bar_plotly(allocation):
 	funds = list(ETF_ALLOCATION_DICT[allocation].keys())
 	percentages = [x * 100 for x in ETF_ALLOCATION_DICT[allocation].values()]
 
-	width = 0.35
-	y_pos = np.arange(len(funds))
+	data = [
+	    go.Bar(
+	        x=funds,
+	        y=percentages,
+	        marker=dict(
+	            color='rgb(158,202,225)',
+	            line=dict(
+	                color='rgb(8,48,107)',
+	                width=1.5
+	            ),
+	        ),
+	        opacity=0.6
+	    )
+	]
 
-	# fig = plt.figure(figsize = (8,8)) 
-	fig, ax = plt.subplots()
-	# ax = fig.add_axes([0.1, 0.2, 0.7, 0.7])
-	# colors: http://matplotlib.org/examples/color/named_colors.html
-	ax.set_xlabel('Portfolio Percentage (%)')
-	ax.set_ylabel('Vanguard ETF Ticker')
-	ax.set_yticks(y_pos)
-	ax.set_yticklabels(funds)
-	ax.set_title('Your Portfolio Allocation: ' + allocation)
-	ax.set_xlim(0, 1.1 * max(percentages))
-	ax.set_ylim(-1, len(funds))
+	layout = go.Layout(
+	    annotations=[
+	        dict(
+	            x=xi,
+	            y=yi,
+	            text=str(yi) + '%',
+	            xanchor='center',
+	            yanchor='bottom',
+	            showarrow=False,
+	        ) for xi, yi in zip(funds, percentages)], 
+	     title='Your Portfolio Allocation: ' + allocation, 
+	     yaxis=dict(
+	     	title='Percentage of Portfolio (%)'),
+	     xaxis=dict(
+	     	title='Vanguard ETFs Ticker Symbols')
+	)
 
-	rects = ax.barh(y_pos, percentages, 0.65, align='center', color = 'thistle')
-
-	for rect in rects: 
-		ax.text(rect.get_width() + 0.40, rect.get_y() + rect.get_height()/4., rect.get_width())
-
-	# plt.tight_layout()
-	if save_to is None: 
-		plt.show()
-	else: 
-		fig.savefig(save_to)
+	fig = go.Figure(data=data, layout=layout)
+	plot_url = py.plot(fig, filename='User-Allocation')
+	# tls.get_embed(py.plot_mpl(fig, filename='User-Allocation'))
 
 
-def fund_performance_graph(allocation, hist_period, wealth, save_to = None):
+def fund_performance_graph_plotly(allocation, hist_period, wealth, save_to = None):
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
@@ -249,25 +266,30 @@ def fund_performance_graph(allocation, hist_period, wealth, save_to = None):
 	price_list = [x[1] * wealth for x in prices]
 	x_pos = np.arange(len(date_list))
 
-	fig = plt.figure(figsize = (8,8))
-	ax = fig.add_axes([0.1, 0.2, 0.85, 0.75])
+	data = [
+	    go.Scatter(
+	        x=date_list,
+	        y=price_list, 
+	        line = dict(
+	        	color = ('rgb(8,48,107)')
+	        )
+	    )
+	]
 
-	ax.plot(date_list, price_list, color = 'skyblue')
-	ax.fill_between(date_list, price_list, facecolor='skyblue', alpha = 0.5, lw=0.5)
+	layout = go.Layout(
+	     title='Your Estimated Growth in Wealth Over Past 10 Years: ' + allocation + ' Portfolio', 
+	     yaxis=dict(
+	     	title='Your Portfolio Value ($)'),
+	     xaxis=dict(
+	     	title='Year')
+	)
 
-	ax.set_ylim(min(price_list) - (wealth // 10), max(price_list) + (wealth // 10))
-	ax.set_xlabel('Year')
-	ax.set_ylabel('Portfolio Value ($)')
-	ax.set_title(allocation + " Past " + hist_period[:-1] + "-Year Portfolio Performance")
+	fig = go.Figure(data=data, layout=layout)
+	plot_url = py.plot(fig, filename='User-Portfolio-Performance')
+	# tls.get_embed(py.plot_mpl(fig, filename='User-Portfolio-Performance'))
 
-	ax.text(1000, 2500, 'Value After 10 Years: ' + str(price_list[-1]), fontsize=10)
 
-	if save_to is None: 
-		plt.show()
-	else: 
-		fig.savefig(save_to)
-
-def find_worst_year(allocation, hist_period):
+def find_worst_and_best_year(allocation, hist_period):
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
@@ -279,6 +301,10 @@ def find_worst_year(allocation, hist_period):
 	worst_year_start_date = ''
 	worst_year_end_date = ''
 	worst_year_change = 0
+
+	best_year_start_date = ''
+	best_year_end_date = ''
+	best_year_change = 0
 
 	for date in range(len(date_list) - 251):
 
@@ -294,36 +320,77 @@ def find_worst_year(allocation, hist_period):
 				worst_year_start_date = date_list[date].strftime("%Y-%m-%d %H:%M:%S")
 				worst_year_end_date = next_year_date
 
-	return worst_year_change, worst_year_start_date, worst_year_end_date
+			if price_change > best_year_change: 
+				best_year_change = price_change
+				best_year_start_date = date_list[date].strftime("%Y-%m-%d %H:%M:%S")
+				best_year_end_date = next_year_date
 
-def graph_worst_year(allocation, hist_period, wealth, save_to = None):
+	return worst_year_change, worst_year_start_date, worst_year_end_date, best_year_start_date, best_year_end_date, best_year_change
+
+
+def graph_worst_year_plotly(allocation, hist_period, wealth, save_to = None):
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
-	worst_year_change, worst_year_start_date, worst_year_end_date = find_worst_year(allocation, hist_period)
+	worst_year_change, worst_year_start_date, worst_year_end_date, best_year_start_date, best_year_end_date, best_year_change = find_worst_and_best_year(allocation, hist_period)
 	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF WHERE Date >= '" + worst_year_start_date + "' AND Date <= '" + worst_year_end_date + "';")
 	prices = pf_prices.fetchall()
 	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
 	price_list = [(x[1] / prices[0][1]) * wealth for x in prices]
 	x_pos = np.arange(len(date_list))
 
-	fig = plt.figure(figsize = (8,8))
-	ax = fig.add_axes([0.1, 0.2, 0.85, 0.75])
+	data = [
+	    go.Scatter(
+	        x=date_list,
+	        y=price_list,
+	        line = dict(
+	        	color = ('rgb(255, 69, 0)')
+	        )
+	    )
+	]
 
-	ax.plot(date_list, price_list, color = 'red')
-	ax.fill_between(date_list, price_list, facecolor='red', alpha = 0.5, lw=0.5)
+	layout = go.Layout(
+	     title='Worst 12-Month Performance Over Past 10 Years: ' + allocation + ' Portfolio', 
+	     yaxis=dict(
+	     	title='Your Portfolio Value ($)'),
+	     xaxis=dict(
+	     	title='Date')
+	)
+
+	fig = go.Figure(data=data, layout=layout)
+	plot_url = py.plot(fig, filename='User-Worst-Year')
+	# tls.get_embed(py.plot(fig, filename='User-Worst-Year'))
 
 
-	ax.set_ylim(min(price_list) - (wealth // 10), max(price_list) + (wealth // 10))
-	ax.set_xlabel('Year')
-	ax.set_ylabel('Portfolio Value ($)')
-	ax.set_title(allocation + " Worst 12 Month Portfolio Performance")
-	for tick in ax.get_xticklabels():
-		tick.set_rotation(90)
+def graph_best_year_plotly(allocation, hist_period, wealth, save_to = None):
+	connection = sqlite3.connect("roboadvisor.db")
+	c = connection.cursor()
 
-	# ax.text(1000, 2500, 'Value After 10 Years: ' + str(price_list[-1]), fontsize=10)
+	worst_year_change, worst_year_start_date, worst_year_end_date, best_year_start_date, best_year_end_date, best_year_change = find_worst_and_best_year(allocation, hist_period)
+	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF WHERE Date >= '" + best_year_start_date + "' AND Date <= '" + best_year_end_date + "';")
+	prices = pf_prices.fetchall()
+	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
+	price_list = [(x[1] / prices[0][1]) * wealth for x in prices]
+	x_pos = np.arange(len(date_list))
 
-	if save_to is None: 
-		plt.show()
-	else: 
-		fig.savefig(save_to)
+	data = [
+	    go.Scatter(
+	        x=date_list,
+	        y=price_list,
+	        line = dict(
+	        	color = ('rgb(8,48,107)')
+	        )
+	    )
+	]
+
+	layout = go.Layout(
+	     title='Best 12-Month Performance Over Past 10 Years: ' + allocation + ' Portfolio', 
+	     yaxis=dict(
+	     	title='Your Portfolio Value ($)'),
+	     xaxis=dict(
+	     	title='Date')
+	)
+
+	fig = go.Figure(data=data, layout=layout)
+	plot_url = py.plot(fig, filename='User-Best-Year')
+	# tls.get_embed(py.plot(fig, filename='User-Best-Year'))
