@@ -1,11 +1,15 @@
 #Create basic survey output
 
 
-def risk_tolerance():
+def risk_tolerance(args_from_ui):
 
 	score = 0
 	#####DEMOGRAPHIC QUESTIONS
-	q1 = input('How old are you?: ')
+
+
+	score = 0
+	#####DEMOGRAPHIC QUESTIONS
+	q1 = args_from_ui['q1']
 	if int(q1) <= 55:
 		if int(q1) <= 45:
 			if int(q1) <= 30:
@@ -15,12 +19,11 @@ def risk_tolerance():
 		elif int(q1) > 45:
 			score += 2
 
-	print()
-	q2 = input('At what age do you plan to retire?: ')
+	q2 = args_from_ui['q2']
 
 	print()
 	print('Options: Single, Married, Other')
-	q3 = input('What is your marital status?: ')
+	q3 = args_from_ui['q3']
 		#Options: Single, Married, Divorced
 		
 	if q3.lower() == 'single':
@@ -31,7 +34,7 @@ def risk_tolerance():
 		pass
 
 	print()
-	q4 = input('What is your annual income?: ')
+	q4 = args_from_ui['q4']
 	if int(q4) >= 50000:
 		if int(q4) >= 75000:
 			if int(q4) >= 100000:
@@ -43,7 +46,7 @@ def risk_tolerance():
 
 	print()
 	print('Options: Strongly agree, somewhat agree, neutral, somewhat disagree, strongly disagree')
-	q5 = input('My current and future income sources are very stable: ')
+	q5 = args_from_ui['q5']
 		#Options: Strongly agree, somewhat agree, neutral, somewhat disagree, strongly disagree	
 	if q5.lower() == "strongly agree":
 		score += 5
@@ -59,7 +62,7 @@ def risk_tolerance():
 	####BEHAVIORAL QUESTIONS
 	print()
 	print('Options: Generating income, Growing wealth, Other')
-	q6 = input('What is your main goal in investing?: ')
+	q6 = args_from_ui['q6']
 		#Options: Generating income, Growing wealth, Other 
 		#Options: Savings, Retirement, Other
 	if q6.lower() == 'generating income':
@@ -71,7 +74,7 @@ def risk_tolerance():
 
 	print()
 	print('Options: maximizing gains, minimizing loses, both equally')
-	q7 = input('Which is more important to you: Maximizing gains or mimimizing loses?: ')
+	q7 = args_from_ui['q7']
 		#Options: maximizing, minimizing, both equally
 	if q7.lower() == 'maximizing gains':
 		score += 5
@@ -84,7 +87,7 @@ def risk_tolerance():
 
 	print()
 	print('Options: A few months, 1-3 years, 3-5 Years, 5-10 Years, More than 10 years ')
-	q8 = input('I plan to begin using money from my investments in ___ years: ')
+	q8 = args_from_ui['q8']
 		#Options: A few months, 1-3 years, 3-5 Years, 5-10 Years, More than 10 years 
 	if q8.lower() == 'a few months':
 		score += 1
@@ -101,21 +104,20 @@ def risk_tolerance():
 
 	print()
 	print('Options: 1000, 5000, 100000')
-	q9 = input('You are on a game show and given the choice between receiving $1000, \
-		a 50% chance to win $5,000, or a 5% chance to win $100,000. Which do you pick?: ')
+	q9 = args_from_ui['q9']
 		#Options: 1000, 5000, 100000
-	if q9 == '1000':
+	if q9 == '$1000 @ 100% chance':
 		score += 1
-	elif q9 == '5000':
+	elif q9 == '$5000 @ 50% chance':
 		score += 3
-	elif q9 == '100000':
+	elif q9 == '$100,000 at 5% chance':
 		score += 5
 	else:
 		print('not an option')
 
 	print()
 	print('Options: Sell everything, Sell some stocks, Do nothing, Buy more stocks')
-	q10 = input('The stock market drops 10% over the course of one month. What do you do?: ')
+	q10 = args_from_ui['q10']
 		#Options: Sell everything, Sell some stocks, Do nothing, Buy more stocks
 	if q10.lower() == 'sell everything':
 		score += 1
@@ -142,6 +144,5 @@ def risk_tolerance():
 		classification = 'Very Aggressive'
 
 
-
-
 	return classification, score
+	

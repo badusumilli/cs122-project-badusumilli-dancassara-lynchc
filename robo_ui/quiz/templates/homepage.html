@@ -1,0 +1,27 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Welcome to the ACC Robo-Advisor</title>
+        <link rel="stylesheet" type="text/css" href="{% static "/static/main.css" %}" />
+    </head>
+    <body>
+        <div id="header">
+            <h1>Welcome to the ACC Robo-Advisor!</h1>
+        </div>
+        <div class="frame">
+            <form method="get">
+                {% csrf_token %}
+                <table class="form">
+                {{ form }}
+                </table>
+                <input type="submit" value="Submit" />
+            </form>
+        </div>
+
+        {% if err %}
+        <div class ="error">
+            {{ err|safe }}
+        </div>
+        {% endif %}
+
