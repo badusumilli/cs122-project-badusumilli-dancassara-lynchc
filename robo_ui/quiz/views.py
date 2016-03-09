@@ -13,10 +13,10 @@ def home(request):
 	context = {}
 	res = None
 	if request.method == 'GET':
-		form = HomePage()
-		if form.is_valid():
-			context['name'] = form['start_quiz']
-			context['form'] = form 
+		form = HomePage(request.GET)
+		context['name'] = form['start_quiz']
+		context['form'] = form 
+		print (context)
 	return render(request, 'homepage.html', context)
 
 #Classes and functions to generate the quiz form and output results
@@ -64,8 +64,8 @@ def _build_dropdown(options):
 
 #Dropdown configuration lists
 MARRAIGE = _build_dropdown(['Single', 'Married', 'Other'])
-STABILITY = _build_dropdown(['Strongly agree', 'Somewhat agree,',\
- 'Somewhat disagree', 'Strongly disagree'])
+STABILITY = _build_dropdown(['Strongly agree', 'Somewhat agree',\
+ 'Neutral','Somewhat disagree', 'Strongly disagree'])
 GOALS = _build_dropdown(['Generating income', 'Growing wealth', \
 	'Other'])
 PRIORITIES = _build_dropdown(['Maximizing gains', 'Minimizing losses', \
@@ -84,8 +84,7 @@ class HomePage(forms.Form):
 		help_text='Our 10 question quiz will determine your investor \
 		profile, and then recommend an investment portfolio that \
 		matches your needs',
-		required=True)
-
+		required=False)
 class MultipleChoice(forms.MultiValueField):
 	def __init__(self, *args, **kwargs):
 		fields=(forms.ChoiceField(label=None, choices=options,\
