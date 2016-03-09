@@ -1,21 +1,24 @@
+# CS122 Project: Dan Cassara, Connor Lynch, Bobby Adusumilli
+
 import datetime
 import sqlite3
 import numpy as np
-import matplotlib.pyplot as plt
+
 # To install plotly for ipython3: 
 # pip3 install --user plotly
 import plotly.plotly as py
 import plotly.tools as tls
 import plotly.graph_objs as go
-
-# Info found in: https://plot.ly/settings/api
+# Sign-In Info found in: https://plot.ly/settings/api
 py.sign_in('badusumilli', 'lop4glzuu1')
 
 
 TIME_DICT = {'1y': 'One', '5y': 'Five', '10y': 'Ten'}
 
+# For calculating historical prices of recommended portfolios for 1, 5 years.
+# Since Vanguard ETFs tend to be newer,their equivalent mutual funds have 
+# longer historical pricing data, which we used when necessary
 ALLOCATION_LIST = ['VSS', 'VNQ', 'VTI', 'BND', 'VNQI', 'VWO', 'BSV', 'VBR', 'VEA', 'VGTSX']
-HISTORICAL_LIST = ['VNQ', 'VBMFX', 'VTI', 'VTMGX', 'VBISX', 'VWO', 'VBR', 'VGTSX']
 
 ALLOCATION_DICT = { 
 	'Very_Conservative': {'VTI': 0.10, 'VBR': 0.02, 
@@ -35,25 +38,11 @@ ALLOCATION_DICT = {
 	'BND': 0.00, 'BSV': 0.00, 'VGTSX': 0.00}
 }
 
-
-ETF_ALLOCATION_DICT = { 
-	'Very_Conservative': {'VTI': 0.10, 'VBR': 0.02,
-	'VEA': 0.04, 'VWO': 0.01, 'VSS': 0.01, 'VNQ': 0.01, 'VNQI': 0.01,
-	'BND': 0.48, 'BSV': 0.12, 'BNDX': 0.20},
-	'Conservative': {'VTI': 0.20, 'VBR': 0.04,
-	'VEA': 0.08, 'VWO': 0.02, 'VSS': 0.02, 'VNQ': 0.02, 'VNQI': 0.02,
-	'BND': 0.36, 'BSV': 0.09, 'BNDX': 0.15},
-	'Balanced': {'VTI': 0.30, 'VBR': 0.06,
-	'VEA': 0.12, 'VWO': 0.03, 'VSS': 0.03, 'VNQ': 0.03, 'VNQI': 0.03,
-	'BND': 0.24, 'BSV': 0.06, 'BNDX': 0.10},
-	'Aggressive': {'VTI': 0.40, 'VBR': 0.08,
-	'VEA': 0.16, 'VWO': 0.04, 'VSS': 0.04, 'VNQ': 0.04, 'VNQI': 0.04,
-	'BND': 0.12, 'BSV': 0.03, 'BNDX': 0.05},
-	'Very_Aggressive': {'VTI': 0.50, 'VBR': 0.10,
-	'VEA': 0.20, 'VWO': 0.05, 'VSS': 0.05, 'VNQ': 0.05, 'VNQI': 0.05,
-	'BND': 0.00, 'BSV': 0.00, 'BNDX': 0.00}
-}
-
+# For calculating historical prices of recommended portfolios for 10 years.
+# The ETFs VSS and VNQI did not have 10-year historical prices, so we 
+# had to slightly alter historical performance to account for this, 
+# but the changes are not significant for overall portfolio returns
+HISTORICAL_LIST = ['VNQ', 'VBMFX', 'VTI', 'VTMGX', 'VBISX', 'VWO', 'VBR', 'VGTSX']
 
 HISTORICAL_DICT = {
 	'Very_Conservative': {'VTI': 0.10, 'VBR': 0.02, 'VTMGX': 0.05, 
@@ -74,7 +63,6 @@ CHOOSE_DICT = {
 	'10y': HISTORICAL_DICT
 }
 
-
 ETF_NAMES = {
 	'VTI': 'Vanguard Total Stock Market ETF', 
 	'VBR': 'Vanguard Small-Cap Value ETF',
@@ -86,21 +74,100 @@ ETF_NAMES = {
 	'BND': 'Vanguard Total Bond Market ETF',			
 	'BSV': 'Vanguard Short-Term Bond ETF',			
 	'BNDX': 'Vanguard Total International Bond ETF'	
-	}
+}
 
-def create_potential_portfolios():
+# Final potential recommended portfolios with Vanguard ETFs
+ETF_ALLOCATION_DICT = { 
+	'Very_Conservative': {'VTI': 0.10, 'VBR': 0.02,
+	'VEA': 0.04, 'VWO': 0.01, 'VSS': 0.01, 'VNQ': 0.01, 'VNQI': 0.01,
+	'BND': 0.48, 'BSV': 0.12, 'BNDX': 0.20},
+	'Conservative': {'VTI': 0.20, 'VBR': 0.04,
+	'VEA': 0.08, 'VWO': 0.02, 'VSS': 0.02, 'VNQ': 0.02, 'VNQI': 0.02,
+	'BND': 0.36, 'BSV': 0.09, 'BNDX': 0.15},
+	'Balanced': {'VTI': 0.30, 'VBR': 0.06,
+	'VEA': 0.12, 'VWO': 0.03, 'VSS': 0.03, 'VNQ': 0.03, 'VNQI': 0.03,
+	'BND': 0.24, 'BSV': 0.06, 'BNDX': 0.10},
+	'Aggressive': {'VTI': 0.40, 'VBR': 0.08,
+	'VEA': 0.16, 'VWO': 0.04, 'VSS': 0.04, 'VNQ': 0.04, 'VNQI': 0.04,
+	'BND': 0.12, 'BSV': 0.03, 'BNDX': 0.05},
+	'Very_Aggressive': {'VTI': 0.50, 'VBR': 0.10,
+	'VEA': 0.20, 'VWO': 0.05, 'VSS': 0.05, 'VNQ': 0.05, 'VNQI': 0.05,
+	'BND': 0.00, 'BSV': 0.00, 'BNDX': 0.00}
+}
+
+
+def create_each_potential_portfolio():
+	'''
+	Function to create historical prices for each possible recommended 
+	portfolio. This should be updated along with Cron.
+
+	Outputs: 
+		Updated sqlite3 price tables for 1, 5, and 10 year portfolios of 
+			each possible recommended portfolio
+	'''
+	connection = sqlite3.connect("roboadvisor.db")
+	c = connection.cursor()
+
 	for years in CHOOSE_DICT.keys():
 		create_table(years)
-
-
-def create_each_portfolio():
-	for years in CHOOSE_DICT.keys():
 		for allocation in ALLOCATION_DICT.keys():
 			get_historical_pf_prices(allocation, years)
 
+	connection.commit()
+	connection.close
+
+
+def create_graphs(allocation, hist_period, wealth):
+	'''
+	Function to create necessary graphs for a user based on survey answers.
+
+	Inputs: 
+		allocation: our recommended allocation for a user (ex: 'Aggressive')
+		hist_period: number of years for historical portfolio prices 
+			(ex: '10y')
+		wealth: starting money that person can invest (ex: 1000)
+
+	Outputs:  
+		annualized_return: annualized_return of user's recommended portfolio
+			over hist_period
+		worst_year_change: worst 12-month performance of recommended 
+			portfolio over hist_period
+		best_year_change: best 12-month performance of recommended portfolio
+			over hist_period
+	'''
+	connection = sqlite3.connect("roboadvisor.db")
+	c = connection.cursor()
+
+	worst_year_change, worst_year_start_date, worst_year_end_date, best_year_change, best_year_start_date, best_year_end_date = find_worst_and_best_year(allocation, hist_period)
+
+	allocation_bar_plotly(allocation)
+	annualized_return = fund_performance_graph_plotly(allocation, hist_period, wealth)
+	graph_worst_year_plotly(allocation, hist_period, wealth, worst_year_change, worst_year_start_date, worst_year_end_date)
+	best_return graph_best_year_plotly(allocation, hist_period, wealth, best_year_change, best_year_start_date, best_year_end_date)
+
+	connection.commit()
+	connection.close
+
+	return annualized_return, worst_year_change, best_year_change
+
 
 def create_table(hist_period):
+	'''
+	Create sqlite3 table for historical prices of all Vanguard ETFs / 
+	mutual funds that will be used to calculate historical prices for 
+	each potential recommended portfolio
 
+	Input: 
+		hist_period: string of years for historical portfolio prices 
+			(ex: '10y')
+
+	Outputs: 
+		sqlite3 table(s) with historical prices of all Vanguard ETFs / 
+			mutual funds for given hist_period. For hist_period = '10y', 
+			since not all Vanguard ETF / mutual fund data goes back 10 
+			years, we are calculating return info through a manipulated
+			process with the data we have. 
+	'''
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
@@ -133,6 +200,34 @@ def create_table(hist_period):
 
 
 def create_sql_statements(fund_list, hist_period, hist_date_old, hist_date_new, create_statement):
+	'''
+	Helper function to create_table that creates string of sqlite3 query 
+	to create the relevant sqlite3 tables with all historical Vanguard ETFs / 
+	mutual funds data over historical period
+
+	Inputs: 
+		fund_list: list of Vanguard ETFs / mutual funds to find the  
+			historical prices for
+		hist_period: string of years for historical portfolio prices 
+			(ex: '10y')
+		hist_date_old: starting date (ex: datetime.date(2016, 3, 9)) to 
+			calculate normalized value (over hist_period) of a given 
+			ETF / fund 
+		hist_date_new: ending date (ex: datetime.date(2016, 3, 9)) to 
+			calculate normalized value (over hist_period) of a given 
+			ETF / fund 
+		create_statement: sqlite3 query string to create necessary table 
+			with normalized historical prices of Vanguard ETFs / funds 
+			over hist_period
+
+	Outputs: 
+		create_statement: updated sqlite3 query string to create necessary 
+			table with normalized historical prices of Vanguard ETFs / funds 
+			over hist_period
+		sql_query: sqlite3 query string to add necessary normalized
+			historical prices of Vanguard ETFs / funds over hist_period
+			to the specified table
+	'''
 	select_statement = ""
 	from_statement = ""
 	join_statement = ""
@@ -171,7 +266,19 @@ def create_sql_statements(fund_list, hist_period, hist_date_old, hist_date_new, 
 
 
 def get_historical_pf_prices(allocation, hist_period):
+	'''
+	Function to calculate normalized to 1 historical prices of a 
+	portfolio (allocation) over a specified period (hist_period)
 
+	Inputs: 
+		allocation: specified allocation (ex. 'Aggressive') 
+		hist_period: string of years for historical portfolio prices 
+			(ex: '10y')
+
+	Output: 
+		allocation_Year_PF: sqlite3 table of normalized historical
+		prices of an allocation over hist_period 
+	'''
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
@@ -215,7 +322,78 @@ def get_historical_pf_prices(allocation, hist_period):
 	connection.close
 
 
+def find_worst_and_best_year(allocation, hist_period):
+	'''
+	Function to find worst 12-month and best 12-month performances
+	of a specific allocation over the specified hist_period
+
+	Inputs: 
+		allocation: specified allocation (ex. 'Aggressive') 
+		hist_period: string of years for historical portfolio prices 
+			(ex: '10y')
+
+	Outputs: 
+		worst_year_change: String of percentage (ex: '-1.83%') of loss
+			in portfolio value over worst 12-month period
+		worst_year_start_date: Start date of worst 12-month period
+		worst_year_end_date: End date of worst 12-month period
+		best_year_change: String of percentage (ex: '1.83%') of gain
+			in portfolio value over best 12-month period
+		best_year_start_date: Start date of best 12-month period
+		best_year_end_date: End date of best 12-month period
+	'''
+	connection = sqlite3.connect("roboadvisor.db")
+	c = connection.cursor()
+
+	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF;")
+	prices = pf_prices.fetchall()
+	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
+	price_list = [x[1] for x in prices]
+
+	worst_year_start_date = ''
+	worst_year_end_date = ''
+	worst_year_change = 0
+
+	best_year_start_date = ''
+	best_year_end_date = ''
+	best_year_change = 0
+
+	for date in range(len(date_list) - 251):
+
+		next_year_date = date_list[date] + datetime.timedelta(days = 365)
+		next_year_date = next_year_date.strftime("%Y-%m-%d %H:%M:%S")
+		next_year_price = c.execute("SELECT PF_Price FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF WHERE Date < '" + next_year_date + "' ORDER BY Date DESC LIMIT 1;")
+		next_price = next_year_price.fetchone()[0]
+		
+		if next_price != []: 
+			price_change = ((next_price - price_list[date]) / price_list[date]) * 100
+			if price_change < worst_year_change: 
+				worst_year_change = price_change
+				worst_year_start_date = date_list[date].strftime("%Y-%m-%d %H:%M:%S")
+				worst_year_end_date = next_year_date
+
+			if price_change > best_year_change: 
+				best_year_change = price_change
+				best_year_start_date = date_list[date].strftime("%Y-%m-%d %H:%M:%S")
+				best_year_end_date = next_year_date
+
+	worst_year_change = str("{0:.2f}".format(worst_year_change)) + "%"
+	best_year_change = str("{0:.2f}".format(best_year_change)) + "%"
+
+	return worst_year_change, worst_year_start_date, worst_year_end_date, best_year_change, best_year_start_date, best_year_end_date
+
+
 def allocation_bar_plotly(allocation):
+	'''
+	Function to create interactive bar graph of our recommended portfolio
+	allocation to a user using the Python package plotly
+
+	Input: 
+		allocation: recommended allocation (ex: 'Aggressive')
+
+	Output: 
+		'User-Allocation': Interactive plotly bar graph of allocation
+	'''
 	funds = list(ETF_ALLOCATION_DICT[allocation].keys())
 	percentages = [x * 100 for x in ETF_ALLOCATION_DICT[allocation].values()]
 
@@ -256,7 +434,21 @@ def allocation_bar_plotly(allocation):
 	# tls.get_embed(py.plot_mpl(fig, filename='User-Allocation'))
 
 
-def fund_performance_graph_plotly(allocation, hist_period, wealth, save_to = None):
+def fund_performance_graph_plotly(allocation, hist_period, wealth):
+	'''
+	Function to create interactive line graph of performance of user's 
+	wealth invested in recommended allocation over past hist_period years
+	using Python package plotly
+
+	Inputs: 
+		allocation: recommended allocation (ex: 'Aggressive')
+		hist_period: string of years for historical portfolio prices 
+			(ex: '10y')
+		wealth: starting money that person can invest (ex: 1000)
+
+	Output: 
+		'User-Portfolio-Performance'
+	'''
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
@@ -288,56 +480,19 @@ def fund_performance_graph_plotly(allocation, hist_period, wealth, save_to = Non
 	plot_url = py.plot(fig, filename='User-Portfolio-Performance')
 	# tls.get_embed(py.plot_mpl(fig, filename='User-Portfolio-Performance'))
 
+	annualized_return = (((price_list[-1] / price_list[0]) ** (1 / int(hist_period[:-1]))) - 1) * 100
+	return str("{0:.2f}".format(annualized_return)) + "%"
 
-def find_worst_and_best_year(allocation, hist_period):
+
+def graph_worst_year_plotly(allocation, hist_period, wealth, worst_year_change, worst_year_start_date, worst_year_end_date):
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
-	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF;")
-	prices = pf_prices.fetchall()
-	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
-	price_list = [x[1] for x in prices]
-
-	worst_year_start_date = ''
-	worst_year_end_date = ''
-	worst_year_change = 0
-
-	best_year_start_date = ''
-	best_year_end_date = ''
-	best_year_change = 0
-
-	for date in range(len(date_list) - 251):
-
-		next_year_date = date_list[date] + datetime.timedelta(days = 365)
-		next_year_date = next_year_date.strftime("%Y-%m-%d %H:%M:%S")
-		next_year_price = c.execute("SELECT PF_Price FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF WHERE Date < '" + next_year_date + "' ORDER BY Date DESC LIMIT 1;")
-		next_price = next_year_price.fetchone()[0]
-		
-		if next_price != []: 
-			price_change = (next_price - price_list[date]) / price_list[date]
-			if price_change < worst_year_change: 
-				worst_year_change = price_change
-				worst_year_start_date = date_list[date].strftime("%Y-%m-%d %H:%M:%S")
-				worst_year_end_date = next_year_date
-
-			if price_change > best_year_change: 
-				best_year_change = price_change
-				best_year_start_date = date_list[date].strftime("%Y-%m-%d %H:%M:%S")
-				best_year_end_date = next_year_date
-
-	return worst_year_change, worst_year_start_date, worst_year_end_date, best_year_start_date, best_year_end_date, best_year_change
-
-
-def graph_worst_year_plotly(allocation, hist_period, wealth, save_to = None):
-	connection = sqlite3.connect("roboadvisor.db")
-	c = connection.cursor()
-
-	worst_year_change, worst_year_start_date, worst_year_end_date, best_year_start_date, best_year_end_date, best_year_change = find_worst_and_best_year(allocation, hist_period)
+	# worst_year_change, worst_year_start_date, worst_year_end_date, best_year_change, best_year_start_date, best_year_end_date = find_worst_and_best_year(allocation, hist_period)
 	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF WHERE Date >= '" + worst_year_start_date + "' AND Date <= '" + worst_year_end_date + "';")
 	prices = pf_prices.fetchall()
 	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
 	price_list = [(x[1] / prices[0][1]) * wealth for x in prices]
-	x_pos = np.arange(len(date_list))
 
 	data = [
 	    go.Scatter(
@@ -361,12 +516,15 @@ def graph_worst_year_plotly(allocation, hist_period, wealth, save_to = None):
 	plot_url = py.plot(fig, filename='User-Worst-Year')
 	# tls.get_embed(py.plot(fig, filename='User-Worst-Year'))
 
+	annualized_return = ((price_list[-1] / price_list[0]) ** (1 / int(hist_period[:-1]))) - 1
+	return annualized_return
 
-def graph_best_year_plotly(allocation, hist_period, wealth, save_to = None):
+
+def graph_best_year_plotly(allocation, hist_period, wealth, best_year_change, best_year_start_date, best_year_end_date):
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
-	worst_year_change, worst_year_start_date, worst_year_end_date, best_year_start_date, best_year_end_date, best_year_change = find_worst_and_best_year(allocation, hist_period)
+	# worst_year_change, worst_year_start_date, worst_year_end_date, best_year_change, best_year_start_date, best_year_end_date = find_worst_and_best_year(allocation, hist_period)
 	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF WHERE Date >= '" + best_year_start_date + "' AND Date <= '" + best_year_end_date + "';")
 	prices = pf_prices.fetchall()
 	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
