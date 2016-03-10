@@ -10,7 +10,7 @@ import plotly.plotly as py
 import plotly.tools as tls
 import plotly.graph_objs as go
 # Sign-In Info found in: https://plot.ly/settings/api
-py.sign_in('badusumilli', 'lop4glzuu1')
+py.sign_in('craylynch', 'vje7oq77s8')
 
 
 TIME_DICT = {'1y': 'One', '5y': 'Five', '10y': 'Ten'}
