@@ -21,6 +21,13 @@ def home(request):
 		print (context)
 	return render(request, 'homepage.html', context)
 
+def results(request):
+	context = {}
+	res = None
+	
+	return render(request, 'results.html', context)
+
+
 #Classes and functions to generate the quiz form and output results
 def quiz_form(request):
 	context = {}
@@ -39,14 +46,18 @@ def quiz_form(request):
 			args['q8'] = form.cleaned_data['divest_in']
 			args['q9'] = form.cleaned_data['game_show']
 			args['q10'] = form.cleaned_data['stock_panic']
-			args['q11'] = form.cleaned_data['principal']
+			args['q11'] = int(form.cleaned_data['principal'])
 			print (args)
 			try:
 				profile = survey.risk_tolerance(args)
 				print (profile)
 			except Exception as e:
 				print ('exception caught')
-
+			try:
+				annualized_return, worst_year_change, best_year_change, ETF_Names = \
+				portfolio_return.create_graphs(profile, args['q11'])
+			except Exception as e:
+				print ('exception caught')
 
 
 	# allocation = profile[0]
@@ -168,21 +179,11 @@ class QuizForm(forms.Form):
 		required=True)
 
 
-# class Results(forms.Form):
-# 	allocation_graph = tls.get_embed(https://plot.ly/20/~badusumilli/) 
-
-	# growth_of_wealth = 
-
-	# worst_year =
-
-	# best_year = 
-
-
-def results(request):
-	context = {}
-	res = None
-	
-	return render(request, 'results.html', context)
-	return HttpResponse("This is the page where our results will go!")
+# class Results(self):
+# 	def __init__(self):
+# 		self._allocation_graph = 
+# 		self._growth_of_wealth = 
+# 		self._worst_year =
+# 		self._best_year = 
 
 

@@ -2,24 +2,43 @@
 html, body {
     margin: 0;
     padding: 0;
-    font-family: Verdana;
+    font-family: "Garamond";
 }
 
 div#header {
-    background: rgb(0,76,153);
+    background: rgb(0,50,100);
     margin: 0;
     padding: 0;
+    border-right: 960px;
 }
 
 div#header h1 {
-    font-size: 18px;
+    font-size: 22px;
     color: #f5f5f5;
     margin: 0;
     padding: 7px;
+    border-width: 960px;
+    text-align: center;
+
 }
 
 div.frame {
     margin: 15px;
+    padding: 15px;
+}
+
+div.Row
+{
+    display: table;
+    width: 100%; /*Optional*/
+    table-layout: fixed; /*Optional*/
+    border-spacing: 10px; /*Optional*/
+}
+
+div.Column
+{
+    display: table-cell;
+    background-color: red; /*Optional*/
 }
 
 div.args {
@@ -53,7 +72,8 @@ input.query {
 }
 
 label {
-    font-size: 12px;
+    font-size: 16px;
+    font-family: Helvetica;
 }
 
 p.num_results {
@@ -118,7 +138,7 @@ ul.errorlist {
 }
 
 ul.errorlist li {
-    font-size: 12px;
+    font-size: 8px;
     color: red;
     margin: 0px;
     padding: 0px;
@@ -127,4 +147,5 @@ ul.errorlist li {
 span.helptext {
     font-size: 11px;
     color: gray;
+    font-family: Helvetica;
 }
