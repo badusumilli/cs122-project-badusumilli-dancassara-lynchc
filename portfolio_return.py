@@ -1,9 +1,15 @@
 # CS122 Project: Dan Cassara, Connor Lynch, Bobby Adusumilli
 
+# This file contains functions to create sqlite3 tables of historical 
+# pricing and performance data for each potential investment allocation. 
+# Also functions that create the historical performance graphs using
+# the Python package Plotly
+
+# http://stackoverflow.com/questions/19356920/embed-plotly-graph-into-a-webpage-with-bottle
+
 import datetime
 import sqlite3
 import numpy as np
-
 # To install plotly for ipython3: 
 # pip3 install --user plotly
 import plotly.plotly as py
@@ -57,6 +63,8 @@ HISTORICAL_DICT = {
 	'VWO': 0.05, 'VNQ': 0.10, 'VBMFX': 0.00, 'VBISX': 0.00, 'VGTSX': 0.00}
 }
 
+# Because of limited 10 year data of ETFs, first 5 years based on certain 
+# ETFs, while last 5 years based on all recommended ETFs
 CHOOSE_DICT = {
 	'1y': ALLOCATION_DICT, 
 	'5y': ALLOCATION_DICT, 
@@ -182,6 +190,7 @@ def create_table(hist_period):
 		c.execute(create_statement)
 		c.execute("INSERT INTO " + TIME_DICT[hist_period] + "_Year_Prices " + sql_query)
 
+	# Must combine datasets because of limited 10 year data
 	else: 
 		c.execute("DROP TABLE IF EXISTS " + TIME_DICT[hist_period] + "_Year_Prices_Old")
 		create_statement_old = "CREATE TABLE " + TIME_DICT[hist_period] + "_Year_Prices_Old ("
@@ -294,6 +303,7 @@ def get_historical_pf_prices(allocation, hist_period):
 
 	select_statement = select_statement[:-3] + ") "
 
+	# 10 year data is limited, so must combine data from different funds
 	if hist_period != '10y':
 		from_statement = "FROM " + TIME_DICT[hist_period] + "_Year_Prices;"
 	else: 
@@ -347,6 +357,8 @@ def find_worst_and_best_year(allocation, hist_period):
 
 	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF;")
 	prices = pf_prices.fetchall()
+
+	# Get dates in datetime format for querying purposes
 	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
 	price_list = [x[1] for x in prices]
 
@@ -388,7 +400,8 @@ def find_worst_and_best_year(allocation, hist_period):
 def allocation_bar_plotly(allocation):
 	'''
 	Function to create interactive bar graph of our recommended portfolio
-	allocation to a user using the Python package plotly
+	allocation to a user using the Python package plotly. Code heavily
+	borrowed from https://plot.ly/python/bar-charts/
 
 	Input: 
 		allocation: recommended allocation (ex: 'Aggressive')
@@ -440,7 +453,8 @@ def fund_performance_graph_plotly(allocation, hist_period, wealth):
 	'''
 	Function to create interactive line graph of performance of user's 
 	wealth invested in recommended allocation over past hist_period years
-	using Python package plotly
+	using Python package plotly. Code heavily borrowed from 
+	https://plot.ly/python/line-charts/
 
 	Inputs: 
 		allocation: recommended allocation (ex: 'Aggressive')
@@ -458,6 +472,8 @@ def fund_performance_graph_plotly(allocation, hist_period, wealth):
 
 	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF;")
 	prices = pf_prices.fetchall()
+
+	# Get dates in datetime format for label purposes
 	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
 	price_list = [x[1] * wealth for x in prices]
 	x_pos = np.arange(len(date_list))
@@ -492,7 +508,8 @@ def graph_worst_year_plotly(allocation, hist_period, wealth, worst_year_change, 
 	'''
 	Function to create interative line graph of person's decrease in wealth 
 	over worst 12-month period over past hist_period years using Python 
-	package plotly
+	package plotly. Code heavily borrowed from 
+	https://plot.ly/python/line-charts/
 
 	Inputs: 
 		allocation: recommended allocation (ex: 'Aggressive')
@@ -515,6 +532,8 @@ def graph_worst_year_plotly(allocation, hist_period, wealth, worst_year_change, 
 	# worst_year_change, worst_year_start_date, worst_year_end_date, best_year_change, best_year_start_date, best_year_end_date = find_worst_and_best_year(allocation, hist_period)
 	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF WHERE Date >= '" + worst_year_start_date + "' AND Date <= '" + worst_year_end_date + "';")
 	prices = pf_prices.fetchall()
+
+	# Get dates in datetime format
 	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
 	price_list = [(x[1] / prices[0][1]) * wealth for x in prices]
 
@@ -548,7 +567,8 @@ def graph_best_year_plotly(allocation, hist_period, wealth, best_year_change, be
 	'''
 	Function to create interative line graph of user's increase in wealth 
 	over best 12-month period over past hist_period years using Python 
-	package plotly
+	package plotly. Code heavily borrowed from 
+	https://plot.ly/python/line-charts/
 
 	Inputs: 
 		allocation: recommended allocation (ex: 'Aggressive')

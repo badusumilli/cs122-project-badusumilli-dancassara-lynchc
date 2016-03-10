@@ -144,5 +144,5 @@ def risk_tolerance(args_from_ui):
 		classification = 'Very_Aggressive'
 
 
-	return classification, score
+	return classification
 	

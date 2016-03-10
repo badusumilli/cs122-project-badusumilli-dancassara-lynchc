@@ -39,6 +39,7 @@ def quiz_form(request):
 			args['q8'] = form.cleaned_data['divest_in']
 			args['q9'] = form.cleaned_data['game_show']
 			args['q10'] = form.cleaned_data['stock_panic']
+			args['q11'] = form.cleaned_data['principal']
 			print (args)
 			try:
 				profile = survey.risk_tolerance(args)
@@ -160,6 +161,10 @@ class QuizForm(forms.Form):
 		choices=PANIC,
 		help_text='select the option that best describes \
 		your decision',
+		required=True)
+	principal = forms.CharField(
+		label='What is the current amount you wish to invest?',
+		help_text='Please enter an amount in USD. Do not use commas',
 		required=True)
 
 
