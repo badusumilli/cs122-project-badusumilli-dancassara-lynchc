@@ -46,17 +46,31 @@ def retrieve_hist_prices(ticker):
 	'''
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
+	df = 'string'
 
 	# c.execute("DROP TABLE IF EXISTS " + ticker)
-
-	# To get only most recent data
-	last_date = c.execute("SELECT date FROM " + ticker + " ORDER BY date DESC LIMIT 1")
-	last_date = last_date.fetchall()[0]
-	last_date = datetime.datetime.strptime(last_date[0], '%Y-%m-%d %H:%M:%S')
-
-	if last_date.date() < datetime.datetime.now().date() - datetime.timedelta(days=1):
-		df = DataReader(ticker,  'yahoo', last_date + datetime.timedelta(days=1), datetime.datetime.now())
+	result = c.execute("select count(*) from sqlite_master where type='table' and name='" + ticker + "'")
+	exists = result.fetchall()[0][0]
 	
+	if exists == 1:
+
+		# To get only most recent data
+		last_date = c.execute("SELECT date FROM " + ticker + " ORDER BY date DESC LIMIT 1")
+		last_date = last_date.fetchall()[0]
+		last_date = datetime.datetime.strptime(last_date[0], '%Y-%m-%d %H:%M:%S')
+
+		current = DataReader(ticker,  'yahoo', datetime.datetime.now() - datetime.timedelta(days=5), datetime.datetime.now())
+		dff = pandas.DataFrame(current)
+		dff["Date"] = dff.index
+		current = datetime.datetime.strptime(str(dff["Date"][-1]), '%Y-%m-%d %H:%M:%S')
+
+		if last_date.date() < current.date():
+			df = DataReader(ticker,  'yahoo', last_date + datetime.timedelta(days=1), datetime.datetime.now())
+		
+	else:
+		df = DataReader(ticker,  'yahoo', datetime.datetime(1980, 1, 1), datetime.datetime.now())
+	
+	if type(df) != str:
 		dataframe = pandas.DataFrame(df)
 		dataframe["Date"] = dataframe.index
 		dataframe["Adj_Close"] = dataframe.pop("Adj Close")
@@ -66,7 +80,6 @@ def retrieve_hist_prices(ticker):
 
 	connection.commit()
 	connection.close
-
 
 
 #######################################################################################333
@@ -82,23 +95,4 @@ if __name__=="__main__":
     ticker = sys.argv[1]
     retrieve_hist_prices(ticker)
     
-    # for index in range(1, num_args):
-
-	   #  ticker = sys.argv[index]
-
-	   #  # # print(ticker_list)
-	   #  # print('arg 0: ', sys.argv[0])
-	   #  # print('arg 1: ', sys.argv[1])
-	   #  print(ticker)
-	   #  retrieve_hist_prices(ticker)
-
-
-
-
-
-
-
-
-
-
-
+ 
