@@ -1,7 +1,8 @@
 # CS122 Project: Dan Cassara, Connor Lynch, Bobby Adusumilli
-# Functions to obtain historical investment data from Yahoo Finance
-# and manipulate this data to get approprate portfolio data for 
-# each allocation that we specify
+
+# This file contains functions to obtain historical investment data 
+# from Yahoo Finance and store this data into the sqlite3 database
+# roboadvisor.db
 
 import sqlite3
 import pandas
@@ -47,7 +48,6 @@ def retrieve_hist_prices(ticker):
 	c = connection.cursor()
 
 	# c.execute("DROP TABLE IF EXISTS " + ticker)
-	# df = DataReader(ticker,  'yahoo', datetime.datetime(1980,1,1), datetime.datetime.now())
 
 	# To get only most recent data
 	last_date = c.execute("SELECT date FROM " + ticker + " ORDER BY date DESC LIMIT 1")
@@ -61,27 +61,12 @@ def retrieve_hist_prices(ticker):
 		dataframe["Date"] = dataframe.index
 		dataframe["Adj_Close"] = dataframe.pop("Adj Close")
 
-	# http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.to_sql.html
+		# Code from: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.to_sql.html
 		dataframe.to_sql(ticker, connection, if_exists='append', index=False)
 
 	connection.commit()
 	connection.close
 
-
-# def drop_tables(ticker_list):
-# 	connection = sqlite3.connect("roboadvisor.db")
-# 	c = connection.cursor()
-# 	for ticker in ticker_list:
-# 		c.execute("DROP TABLE IF EXISTS " + ticker)
-# 		c.execute("DROP TABLE IF EXISTS " + ticker + "_Distributions")
-
-# 	# Get min dates
-# 	for ticker in ticker_list:
-# 		x = c.execute("SELECT MIN(DATE) FROM " + ticker +";")
-# 		print(ticker, x.fetchall()) 
-
-# 	connection.commit()
-# 	connection.close
 
 
 #######################################################################################333

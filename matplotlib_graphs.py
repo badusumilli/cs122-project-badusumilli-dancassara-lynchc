@@ -183,7 +183,6 @@ def pull_historical_data(ticker_list, username):
 
 	connection.commit()
 	connection.close
-
 	# return dis
 
 
@@ -191,3 +190,19 @@ def pull_hist_data(username):
 	url = 'http://us.spindices.com/idsexport/file.xls?hostIdentifier=48190c8c-42c4-46af-8d1a-0cd5db894797&selectedModule=PerformanceGraphView&selectedSubModule=Graph&yearFlag=tenYearFlag&indexId=5532268'
 	output_path = "/home/" + username + "/Downloads"
 	urllib.request.urlretrieve(url, output_path + "/RE_ex_US.csv")
+
+
+# def drop_tables(ticker_list):
+# 	connection = sqlite3.connect("roboadvisor.db")
+# 	c = connection.cursor()
+# 	for ticker in ticker_list:
+# 		c.execute("DROP TABLE IF EXISTS " + ticker)
+# 		c.execute("DROP TABLE IF EXISTS " + ticker + "_Distributions")
+
+# 	# Get min dates
+# 	for ticker in ticker_list:
+# 		x = c.execute("SELECT MIN(DATE) FROM " + ticker +";")
+# 		print(ticker, x.fetchall()) 
+
+# 	connection.commit()
+# 	connection.close
