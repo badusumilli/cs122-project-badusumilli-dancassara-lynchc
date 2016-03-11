@@ -397,18 +397,33 @@ def find_worst_and_best_year(allocation, hist_period = '10y'):
 	return worst_year_change, worst_year_start_date, worst_year_end_date, best_year_change, best_year_start_date, best_year_end_date
 
 
+def create_table_worst_best_years():
+	connection = sqlite3.connect("roboadvisor.db")
+	c = connection.cursor()
+	c.execute("DROP TABLE IF EXISTS Best_Worst_Year;")
+	c.execute("CREATE TABLE Best_Worst_Year (Allocation REAL, Worst_Change REAL, Worst_Start_Date REAL, Worst_End_Date REAL, Best_Change REAL, Best_Start_Date REAL, Best_End_Date REAL);")
+
+	for allocation in ALLOCATION_DICT.keys():
+		worst_year_change, worst_year_start_date, worst_year_end_date, best_year_change, best_year_start_date, best_year_end_date = \
+		find_worst_and_best_year(allocation)
+		# c.execute("""INSERT INTO Best_Worst_Year VALUES ('""" + allocation + """', '""" + worst_year_change + """', '""" + worst_year_start_date + """', '""" + worst_year_end_date + """', '""" + best_year_change + """', '""" + best_year_start_date + """', '""" + best_year_end_date + """')""")
+		c.execute("INSERT INTO Best_Worst_Year VALUES ('" + allocation + "', '" + worst_year_change + "', '" + worst_year_start_date + "', '" + worst_year_end_date + "', '" + best_year_change + "', '" + best_year_start_date + "', '" + best_year_end_date + "')")
+
+	connection.commit()
+	connection.close
+
 
 #######################################################################################333
-if __name__=="__main__":
-    num_args = len(sys.argv)
+# if __name__=="__main__":
+#     num_args = len(sys.argv)
 
-    # if num_args != 2:
-    #     print("usage: python3 " + sys.argv[0] + " <file name for speaker A> " +
-    #           "<file name for speaker B>\n  <file name of text to identify> " +
-    #           "<order>")
-    #     sys.exit(0)
+#     # if num_args != 2:
+#     #     print("usage: python3 " + sys.argv[0] + " <file name for speaker A> " +
+#     #           "<file name for speaker B>\n  <file name of text to identify> " +
+#     #           "<order>")
+#     #     sys.exit(0)
 
-    ticker = sys.argv[1]
-    retrieve_hist_prices(ticker)
+#     ticker = sys.argv[1]
+#     retrieve_hist_prices(ticker)
     
  

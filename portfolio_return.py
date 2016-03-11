@@ -70,6 +70,13 @@ def create_graphs(allocation, wealth, worst_year_start_date, worst_year_end_date
 
 	# worst_year_change, worst_year_start_date, worst_year_end_date, best_year_change, best_year_start_date, best_year_end_date = find_worst_and_best_year(allocation, hist_period)
 
+	best_worst = c.execute("SELECT * FROM Best_Worst_Year WHERE Allocation = '" + allocation + "'")
+	bw = best_worst.fetchall()[0]
+	worst_year_start_date = bw[2]
+	worst_year_end_date = bw[3]
+	best_year_start_date = bw[5]
+	best_year_end_date = bw[6]
+
 	allocation_bar_plotly(allocation)
 	annualized_return = fund_performance_graph_plotly(allocation, wealth)
 	graph_worst_year_plotly(allocation, wealth, worst_year_start_date, worst_year_end_date)
