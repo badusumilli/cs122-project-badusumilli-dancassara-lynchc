@@ -30,13 +30,13 @@ def results(request):
 	context = {}
 	res = None
 	investor_profile = 'This will be the explanation of your investor Profile'
-	with open('etfs_text.txt') as data_file:
+	with open('temp_json_files/etfs_text.txt') as data_file:
 		etfs_text = json.load(data_file)
-	with open('performance_text.txt') as data_file:
+	with open('temp_json_files/performance_text.txt') as data_file:
 		performance_text = json.load(data_file)
-	with open('worst_text.txt') as data_file:
+	with open('temp_json_files/worst_text.txt') as data_file:
 		worst_text = json.load(data_file)	
-	with open('best_text.txt') as data_file:
+	with open('temp_json_files/best_text.txt') as data_file:
 		best_text = json.load(data_file)
 
 	context['investor_profile'] = investor_profile 
@@ -71,19 +71,20 @@ def quiz_form(request):
 			try:
 				profile = survey.risk_tolerance(args)
 				print (profile)
+				print (args['q11'])
+			except Exception as e:
+				print ('exception caught')
+
+			try:
+				portfolio_return.create_graphs_and_text(profile, args['q11'])
 			except Exception as e:
 				print ('exception caught')
 
 			return HttpResponseRedirect('results')
 
-			# try:
-			# 	annualized_return, worst_year_change, best_year_change, ETF_Names = \
-			# 	portfolio_return.create_graphs(profile, args['q11'])
-			# except Exception as e:
-			# 	print ('exception caught')
-
 	context['form'] = form
 	return render(request, 'index.html', context)
+
 def _is_valid(res):
 	"""
 	Ensures that the response from the quiz form will match the input required by survey.py
