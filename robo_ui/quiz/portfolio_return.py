@@ -281,7 +281,7 @@ def graph_worst_year_plotly(allocation, wealth, worst_year_start_date, worst_yea
 	        x = date_list,
 	        y = price_list,
 	        line = dict(
-	        	color = ('rgb(255, 69, 0)')
+	        	color = ('rgb(259, 0, 0)')
 	        )
 	    )
 	]

@@ -24,13 +24,15 @@ def home(request):
 	context['form'] = form
 	return render(request, 'homepage.html', context)
 
-
-def results(request):
+def helper():
 	context = {}
 	res = None
 
 	with open('quiz/temp_json_files/allocation_text.txt') as data_file:
 		allocation_text = json.load(data_file)
+		allocation_list = allocation_text.split()
+		profile = allocation_list[-1]
+		print (profile)
 	with open('quiz/temp_json_files/etfs_text.txt') as data_file:
 		etfs_text = json.load(data_file)
 	with open('quiz/temp_json_files/performance_text.txt') as data_file:
@@ -40,11 +42,44 @@ def results(request):
 	with open('quiz/temp_json_files/best_text.txt') as data_file:
 		best_text = json.load(data_file)
 
+	context['profile'] = profile
 	context['allocation_text'] = allocation_text
 	context['etfs_text'] = etfs_text
 	context['performance_text'] = performance_text
 	context['worst_text'] = worst_text
 	context['best_text'] = best_text
+
+	return context
+
+def results(request):
+	
+	context = helper()
+	profile = context['profile']
+	allocations = ['Very_Conservative', 'Conservative', 'Balanced', 'Aggressive', 'Very_Aggressive']
+	x = allocations.index(profile)
+	if 'more' in request.GET:
+		if x != len(allocations)-1:
+			x = x + 1
+			print(x)
+			profile = allocations[x]
+			shit = portfolio_return.create_graphs_and_text(profile, 10000)
+			context = helper()
+			return render(request, 'results.html', context)
+		else:
+			return HttpResponse("Can't get more Agressive!")
+
+	if 'less' in request.GET:
+		if x != 0:
+			x = x - 1
+			print (x)
+			profile = allocations[x]
+			print (profile)
+			shit = portfolio_return.create_graphs_and_text(profile, 10000)
+			context = helper()
+			return render(request, 'results.html', context)
+		else:
+			return HttpResponse("Can't get less Agressive!")
+	
 
 	return render(request, 'results.html', context)
 

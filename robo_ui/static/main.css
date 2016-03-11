@@ -31,6 +31,7 @@ div#graph {
 div.frame {
     margin: 15px;
     padding: 15px;
+    text-align: center;
 }
 
 
@@ -90,7 +91,7 @@ p.num_results {
 }
 
 table.form {
-    text-align: left;
+    text-align: center;
 }
 
 table.form tr td,
