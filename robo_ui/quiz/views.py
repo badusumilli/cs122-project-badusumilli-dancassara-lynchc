@@ -25,18 +25,26 @@ def home(request):
 	context['form'] = form
 	return render(request, 'homepage.html', context)
 
+
 def results(request):
 	context = {}
 	res = None
-
-	investor_profile = "first text"
-
-
-	other_text = "other text"
-
+	investor_profile = 'This will be the explanation of your investor Profile'
+	with open('etfs_text.txt') as data_file:
+		etfs_text = json.load(data_file)
+	with open('performance_text.txt') as data_file:
+		performance_text = json.load(data_file)
+	with open('worst_text.txt') as data_file:
+		worst_text = json.load(data_file)	
+	with open('best_text.txt') as data_file:
+		best_text = json.load(data_file)
 
 	context['investor_profile'] = investor_profile 
-	context['other_text'] = other_text
+	context['etfs_text'] = etfs_text
+	context['performance_text'] = performance_text
+	context['worst_text'] = worst_text
+	context['best_text'] = best_text
+
 	return render(request, 'results.html', context)
 
 
