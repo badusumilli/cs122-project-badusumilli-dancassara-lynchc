@@ -114,7 +114,7 @@ def create_descriptions(allocation, annualized_return, worst_change, best_change
 	+ 'In investing, risk and related in very important ways. Below, you will see ' \
 	+ 'graphs illustrating what the returns of this portfolio have been over the previous ' \
 	+ 'ten years. While there are never any guarantees in investing, an investor should ' \
-	+ 'expect to have a similar experience over the next ten years.'
+	+ 'expect to have a similar experience over the next ten years. ' + allocation
 
 	etfs = []
 	for etf in ETF_NAMES.items():
