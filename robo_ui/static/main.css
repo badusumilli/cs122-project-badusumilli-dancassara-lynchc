@@ -21,6 +21,9 @@ div#header h1 {
     text-align: center;
 
 }
+div#graph {
+    text-align: center;
+}
 
 div.frame {
     margin: 15px;

@@ -1,4 +1,5 @@
 {% load staticfiles %}
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -10,43 +11,47 @@
             <h1>Your Investment Portfolio:</h1>
         </div>
 
+        <div class="frame">
+            <form method="get">
+                {% csrf_token %}
+                <table class="form">
+                {{ other_text }}
+                </table>
+                <!-- <input type="submit" value="More Agressive" />
+                <input type="submit" value="Less Agressive" /> -->
 
+            </form>
+        </div>
 
-        
-        <div>
-           <!--  <h1>
-                <form method="get">
-                    {% csrf_token %}
-                    {{ profile }}
-                </form>
-            </h1> -->
+        <!-- <div id="graph">
             <iframe width="600" height="450" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~badusumilli/20/.embed?width=800 height=600">
             </iframe>
         </div>
 
-        <div>
+        <div id="graph">
             <iframe width="600" height="450" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~badusumilli/22.embed">
             </iframe>
         </div>
                 
-        <div>
+        <div id="graph">
             <iframe width="600" height="450" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~badusumilli/24.embed">
             </iframe>
         </div>
                 
-        <div>
+        <di id="">
             <iframe width="600" height="450" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~badusumilli/26.embed">
             </iframe>
-        </div>
+        </div> -->
 
         <div class="frame">
             <form method="get">
                 {% csrf_token %}
                 <table class="form">
-                {{ form }}
+                {{ investor_profile }}
                 </table>
-                <input type="submit" value="More Agressive" />
-                <input type="submit" value="Less Agressive" />
+                <!-- <input type="submit" value="More Agressive" />
+                <input type="submit" value="Less Agressive" /> -->
+
             </form>
         </div>
 
