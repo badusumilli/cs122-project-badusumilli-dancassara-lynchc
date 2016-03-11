@@ -7,6 +7,7 @@
 
 import datetime
 import sqlite3
+import json
 # To install plotly for ipython3: 
 # pip3 install --user plotly
 import plotly.plotly as py
@@ -50,7 +51,6 @@ ETF_ALLOCATION_DICT = {
 }
 
 
-
 def create_graphs_and_text(allocation, wealth, hist_period = '10y'):
 	'''
 	Function to create necessary graphs for a user based on survey answers.
@@ -90,7 +90,19 @@ def create_graphs_and_text(allocation, wealth, hist_period = '10y'):
 
 	etfs_text, performance_text, worst_text, best_text = create_descriptions(allocation, annualized_return, worst_change, best_change)
 
-	return etfs_text, performance_text, worst_text, best_text
+	with open('temp_json_files/etfs_text.txt', 'w') as outfile: 
+		json.dump(etfs_text, outfile)
+
+	with open('temp_json_files/performance_text.txt', 'w') as outfile: 
+		json.dump(performance_text, outfile)
+
+	with open('temp_json_files/worst_text.txt', 'w') as outfile: 
+		json.dump(worst_text, outfile)
+
+	with open('temp_json_files/best_text.txt', 'w') as outfile: 
+		json.dump(best_text, outfile)	
+
+	# return etfs_text, performance_text, worst_text, best_text
 
 
 def create_descriptions(allocation, annualized_return, worst_change, best_change):
