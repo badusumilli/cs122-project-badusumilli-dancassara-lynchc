@@ -7,8 +7,7 @@ from io import StringIO
 import sys
 import csv
 import os
-from quiz import survey
-from quiz import portfolio_return
+from quiz import survey, portfolio_return
 import plotly.plotly as py
 import webbrowser
 #Homepage when one initially visits the site!
@@ -29,17 +28,19 @@ def home(request):
 def results(request):
 	context = {}
 	res = None
-	investor_profile = 'This will be the explanation of your investor Profile'
-	with open('temp_json_files/etfs_text.txt') as data_file:
+
+	with open('quiz/temp_json_files/allocation_text.txt') as data_file:
+		allocation_text = json.load(data_file)
+	with open('quiz/temp_json_files/etfs_text.txt') as data_file:
 		etfs_text = json.load(data_file)
-	with open('temp_json_files/performance_text.txt') as data_file:
+	with open('quiz/temp_json_files/performance_text.txt') as data_file:
 		performance_text = json.load(data_file)
-	with open('temp_json_files/worst_text.txt') as data_file:
+	with open('quiz/temp_json_files/worst_text.txt') as data_file:
 		worst_text = json.load(data_file)	
-	with open('temp_json_files/best_text.txt') as data_file:
+	with open('quiz/temp_json_files/best_text.txt') as data_file:
 		best_text = json.load(data_file)
 
-	context['investor_profile'] = investor_profile 
+	context['allocation_text'] = allocation_text
 	context['etfs_text'] = etfs_text
 	context['performance_text'] = performance_text
 	context['worst_text'] = worst_text
@@ -70,15 +71,15 @@ def quiz_form(request):
 			print (args)
 			try:
 				profile = survey.risk_tolerance(args)
-				print (profile)
-				print (args['q11'])
+				print (type(profile), type(args['q11']))
 			except Exception as e:
-				print ('exception caught')
 
+				print (e)
+		
 			try:
 				portfolio_return.create_graphs_and_text(profile, args['q11'])
 			except Exception as e:
-				print ('exception caught')
+				print (e)
 
 			return HttpResponseRedirect('results')
 

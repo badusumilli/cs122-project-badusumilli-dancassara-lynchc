@@ -15,27 +15,27 @@
             <form method="get">
                 {% csrf_token %}
                 <table class="form">
-                {{ investor_profile }}
+                {{ allocation_text }}
                 </table>
             </form>
         </div>
 
         <div id="graph">
-            <iframe width="600" height="450" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~badusumilli/20/.embed?width=800 height=600">
+            <iframe width="800" height="600" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~badusumilli/20/.embed?width=800 height=600">
             </iframe>
         </div>
 
          <div class="frame">
             <form method="get">
                 {% csrf_token %}
-                <table class="form">
+                <table class="list">
                 {{ etfs_text }}
                 </table>
             </form>
         </div>
 
         <div id="graph">
-            <iframe width="600" height="450" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~badusumilli/22.embed">
+            <iframe width="800" height="600" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~badusumilli/22.embed">
             </iframe>
         </div>
 
@@ -49,7 +49,7 @@
         </div>
 
         <div id="graph">
-            <iframe width="600" height="450" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~badusumilli/24.embed">
+            <iframe width="800" height="600" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~badusumilli/24.embed">
             </iframe>
         </div>
 
@@ -62,8 +62,8 @@
             </form>
         </div>
                 
-        <di id="">
-            <iframe width="600" height="450" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~badusumilli/26.embed">
+        <div id="graph">
+            <iframe width="800" height="600" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~badusumilli/26.embed">
             </iframe>
         </div>
 
@@ -77,8 +77,8 @@
         </div>
 
 
-        <input type="submit" value="More Agressive" />
-        <input type="submit" value="Less Agressive" />
+        <!-- <input type="submit" value="More Agressive" />
+        <input type="submit" value="Less Agressive" /> -->
 
 
 

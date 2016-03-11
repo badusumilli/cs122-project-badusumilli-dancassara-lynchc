@@ -70,7 +70,6 @@ def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 	c = connection.cursor()
 
 	# worst_year_change, worst_year_start_date, worst_year_end_date, best_year_change, best_year_start_date, best_year_end_date = find_worst_and_best_year(allocation, hist_period)
-
 	best_worst = c.execute("SELECT * FROM Best_Worst_Year WHERE Allocation = '" + allocation + "'")
 	bw = best_worst.fetchall()[0]
 	worst_change = bw[1]
@@ -88,18 +87,21 @@ def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 	connection.commit()
 	connection.close
 
-	etfs_text, performance_text, worst_text, best_text = create_descriptions(allocation, annualized_return, worst_change, best_change)
+	allocation_text, etfs_text, performance_text, worst_text, best_text = create_descriptions(allocation, annualized_return, worst_change, best_change)
 
-	with open('temp_json_files/etfs_text.txt', 'w') as outfile: 
+	with open('quiz/temp_json_files/allocation_text.txt', 'w') as outfile: 
+		json.dump(allocation_text, outfile)
+
+	with open('quiz/temp_json_files/etfs_text.txt', 'w') as outfile: 
 		json.dump(etfs_text, outfile)
 
-	with open('temp_json_files/performance_text.txt', 'w') as outfile: 
+	with open('quiz/temp_json_files/performance_text.txt', 'w') as outfile: 
 		json.dump(performance_text, outfile)
 
-	with open('temp_json_files/worst_text.txt', 'w') as outfile: 
+	with open('quiz/temp_json_files/worst_text.txt', 'w') as outfile: 
 		json.dump(worst_text, outfile)
 
-	with open('temp_json_files/best_text.txt', 'w') as outfile: 
+	with open('quiz/temp_json_files/best_text.txt', 'w') as outfile: 
 		json.dump(best_text, outfile)	
 
 	# return etfs_text, performance_text, worst_text, best_text
@@ -107,32 +109,30 @@ def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 
 def create_descriptions(allocation, annualized_return, worst_change, best_change):
 
+	allocation_text = 'Your recommended investment allocation is ' + allocation
+
 	etfs = []
 	for etf in ETF_NAMES.items():
 		etfs.append(etf[0] + ": " + etf[1])
-	etfs_text = "\n".join(etfs)
-
-	print(etfs_text)
+	etfs_text = "'\n'".join(etfs)
 
 	performance_text = "We recommend that you invest in the " + allocation + " Portfolio. This portfolio consists of " \
 	+ "Vanguard ETFs, because Vanguard offers some of the best-performing ETFs at the lowest costs. " \
 	+ "Additionally, Vanguard allows investors to buy and sell ETFs for free, allowing investors " \
 	+ "to avoid transaction costs. Over the past 10 years, this portfolio grew " \
-	+ annualized_return + "annually."
+	+ annualized_return + " annually."
 
 	worst_text = "The worst 12-month return of the " + allocation + " Portfolio over the past 10 years " \
 	+ "was " + worst_change + ". With this allocation, it is possible that a similar 12-month period may " \
 	+ "occur over the next 10+ years. If you would be overly uncomfortable seeing this drop in your " \
 	+ "wealth, click on the Less Aggressive link below."
-	
-	print(worst_text)
 
 	best_text = "The best 12-month return of the " + allocation + " Portfolio over the past 10 years " \
 	+ "was " + best_change + ". If you would like to see a greater potential increase in your portfolio, " \
 	+ "at the risk of also seeing a worse potential 12-month return than above, click on the More " \
 	+ "Aggressive link below."
 
-	return etfs_text, performance_text, worst_text, best_text
+	return allocation_text, etfs_text, performance_text, worst_text, best_text
 
 
 def allocation_bar_plotly(allocation):
@@ -183,7 +183,7 @@ def allocation_bar_plotly(allocation):
 	)
 
 	fig = go.Figure(data = data, layout = layout)
-	plot_url = py.plot(fig, filename = 'User-Allocation')
+	plot_url = py.plot(fig, filename = 'User-Allocation', auto_open=False)
 	# tls.get_embed(py.plot_mpl(fig, filename='User-Allocation'))
 
 
@@ -234,7 +234,7 @@ def fund_performance_graph_plotly(allocation, wealth, hist_period = '10y'):
 	)
 
 	fig = go.Figure(data = data, layout = layout)
-	plot_url = py.plot(fig, filename = 'User-Portfolio-Performance')
+	plot_url = py.plot(fig, filename = 'User-Portfolio-Performance', auto_open=False)
 	# tls.get_embed(py.plot_mpl(fig, filename='User-Portfolio-Performance'))
 
 	annualized_return = (((price_list[-1] / price_list[0]) ** (1 / int(hist_period[:-1]))) - 1) * 100
@@ -295,7 +295,7 @@ def graph_worst_year_plotly(allocation, wealth, worst_year_start_date, worst_yea
 	)
 
 	fig = go.Figure(data = data, layout = layout)
-	plot_url = py.plot(fig, filename = 'User-Worst-Year')
+	plot_url = py.plot(fig, filename = 'User-Worst-Year', auto_open=False)
 	# tls.get_embed(py.plot(fig, filename='User-Worst-Year'))
 
 	connection.commit()
@@ -355,7 +355,7 @@ def graph_best_year_plotly(allocation, wealth, best_year_start_date, best_year_e
 	)
 
 	fig = go.Figure(data = data, layout = layout)
-	plot_url = py.plot(fig, filename = 'User-Best-Year')
+	plot_url = py.plot(fig, filename = 'User-Best-Year', auto_open=False)
 	# tls.get_embed(py.plot(fig, filename='User-Best-Year'))
 
 	connection.commit()

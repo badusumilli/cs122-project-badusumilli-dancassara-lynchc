@@ -1,8 +1,11 @@
 
 html, body {
-    margin: 0;
-    padding: 0;
+    margin: 15px;
+    padding: 10px;
     font-family: "Garamond";
+    border: 2px;
+    border-color: rgb(0,0,0);
+
 }
 
 div#header {
@@ -29,6 +32,8 @@ div.frame {
     margin: 15px;
     padding: 15px;
 }
+
+
 
 div.Row
 {

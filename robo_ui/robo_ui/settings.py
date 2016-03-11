@@ -78,6 +78,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'QUIZ' : os.path.join(BASE_DIR, 'quiz/roboadvisor.db')
     }
 }
 
