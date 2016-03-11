@@ -114,7 +114,7 @@ def create_descriptions(allocation, annualized_return, worst_change, best_change
 	etfs = []
 	for etf in ETF_NAMES.items():
 		etfs.append(etf[0] + ": " + etf[1])
-	etfs_text = "'\n'".join(etfs)
+	etfs_text = '\n'.join(etfs)
 
 	performance_text = "We recommend that you invest in the " + allocation + " Portfolio. This portfolio consists of " \
 	+ "Vanguard ETFs, because Vanguard offers some of the best-performing ETFs at the lowest costs. " \
