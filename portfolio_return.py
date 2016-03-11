@@ -50,7 +50,8 @@ ETF_ALLOCATION_DICT = {
 }
 
 
-def create_graphs(allocation, wealth, worst_year_start_date, worst_year_end_date, best_year_start_date, best_year_end_date, hist_period = '10y'):
+
+def create_graphs_and_text(allocation, wealth, hist_period = '10y'):
 	'''
 	Function to create necessary graphs for a user based on survey answers.
 
@@ -72,8 +73,10 @@ def create_graphs(allocation, wealth, worst_year_start_date, worst_year_end_date
 
 	best_worst = c.execute("SELECT * FROM Best_Worst_Year WHERE Allocation = '" + allocation + "'")
 	bw = best_worst.fetchall()[0]
+	worst_change = bw[1]
 	worst_year_start_date = bw[2]
 	worst_year_end_date = bw[3]
+	best_change = bw[4]
 	best_year_start_date = bw[5]
 	best_year_end_date = bw[6]
 
@@ -85,7 +88,33 @@ def create_graphs(allocation, wealth, worst_year_start_date, worst_year_end_date
 	connection.commit()
 	connection.close
 
-	return annualized_return, list(ETF_NAMES.values())
+	etfs_text, performance_text, worst_text, best_text = create_descriptions(allocation, annualized_return, worst_change, best_change)
+
+	return etfs_text, performance_text, worst_text, best_text
+
+
+def create_descriptions(allocation, annualized_return, worst_change, best_change):
+
+	etfs = []
+	for etf in ETF_NAMES.items():
+		etfs.append(etf[0] + ": " + etf[1])
+	etfs_text = "\n".join(etfs)
+
+	performance_text = "We recommend that you invest in the " + allocation + " Portfolio. This portfolio consists of " \
+	+ "Vanguard ETFs, because Vanguard offers some of the best-performing ETFs at the lowest costs. " \
+	+ "Additionally, Vanguard allows investors to buy and sell ETFs for free, allowing investors " \
+	+ "to avoid transaction costs. Over the past 10 years, this portfolio grew " \
+	+ annualized_return + "annually."
+
+	worst_text = "The worst 12-month return of the " + allocation + " Portfolio over the past 10 years " \
+	+ "was " + worst_change + ". With this allocation, it is possible that a similar 12-month period may " \
+	+ "occur over the next 10+ years. If you would be overly uncomfortable seeing this drop in your " \
+	+ "wealth, click on the Less Aggressive link below."
+
+	best_text = "The best 12-month return of the " + allocation + " Portfolio over the past 10 years " \
+	+ "was " + best_change + ". If you would like to see a greater potential increase in your portfolio, " \
+	+ "at the risk of also seeing a worse potential 12-month return than above, click on the More " \
+	+ "Aggressive link below."
 
 
 def allocation_bar_plotly(allocation):
@@ -179,7 +208,7 @@ def fund_performance_graph_plotly(allocation, wealth, hist_period = '10y'):
 	]
 
 	layout = go.Layout(
-	     title = 'Your Estimated Growth in Wealth Over Past 10 Years: ' + allocation + ' Portfolio', 
+	     title = 'Your Growth in Wealth Over Past 10 Years: ' + allocation, 
 	     yaxis = dict(
 	     	title = 'Your Portfolio Value ($)'),
 	     xaxis = dict(
@@ -191,6 +220,10 @@ def fund_performance_graph_plotly(allocation, wealth, hist_period = '10y'):
 	# tls.get_embed(py.plot_mpl(fig, filename='User-Portfolio-Performance'))
 
 	annualized_return = (((price_list[-1] / price_list[0]) ** (1 / int(hist_period[:-1]))) - 1) * 100
+	
+	connection.commit()
+	connection.close
+
 	return str("{0:.2f}".format(annualized_return)) + "%"
 
 
@@ -236,7 +269,7 @@ def graph_worst_year_plotly(allocation, wealth, worst_year_start_date, worst_yea
 	]
 
 	layout = go.Layout(
-	     title = 'Worst 12-Month Performance Over Past 10 Years: ' + allocation + ' Portfolio', 
+	     title = 'Worst 12-Month Performance Over Past 10 Years: ' + allocation, 
 	     yaxis = dict(
 	     	title = 'Your Portfolio Value ($)'),
 	     xaxis = dict(
@@ -246,6 +279,9 @@ def graph_worst_year_plotly(allocation, wealth, worst_year_start_date, worst_yea
 	fig = go.Figure(data = data, layout = layout)
 	plot_url = py.plot(fig, filename = 'User-Worst-Year')
 	# tls.get_embed(py.plot(fig, filename='User-Worst-Year'))
+
+	connection.commit()
+	connection.close
 
 	# worst_return = ((price_list[-1] / price_list[0]) - 1) * 100
 	# return str("{0:.2f}".format(worst_return)) + "%"
@@ -293,7 +329,7 @@ def graph_best_year_plotly(allocation, wealth, best_year_start_date, best_year_e
 	]
 
 	layout = go.Layout(
-	     title = 'Best 12-Month Performance Over Past 10 Years: ' + allocation + ' Portfolio', 
+	     title = 'Best 12-Month Performance Over Past 10 Years: ' + allocation, 
 	     yaxis = dict(
 	     	title = 'Your Portfolio Value ($)'),
 	     xaxis = dict(
@@ -303,6 +339,9 @@ def graph_best_year_plotly(allocation, wealth, best_year_start_date, best_year_e
 	fig = go.Figure(data = data, layout = layout)
 	plot_url = py.plot(fig, filename = 'User-Best-Year')
 	# tls.get_embed(py.plot(fig, filename='User-Best-Year'))
+
+	connection.commit()
+	connection.close
 
 	# best_return = ((price_list[-1] / price_list[0]) - 1) * 100
 	# return str("{0:.2f}".format(best_return)) + "%"

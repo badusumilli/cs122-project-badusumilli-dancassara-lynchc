@@ -394,6 +394,9 @@ def find_worst_and_best_year(allocation, hist_period = '10y'):
 	worst_year_change = str("{0:.2f}".format(worst_year_change)) + "%"
 	best_year_change = str("{0:.2f}".format(best_year_change)) + "%"
 
+	connection.commit()
+	connection.close
+
 	return worst_year_change, worst_year_start_date, worst_year_end_date, best_year_change, best_year_start_date, best_year_end_date
 
 
