@@ -78,66 +78,66 @@ CHOOSE_DICT = {
 }
 
 
-def retrieve_hist_prices(ticker):
-	'''
-	Function heavily obtained from http://stackoverflow.com/questions/12433076/
-	download-history-stock-prices-automatically-from-yahoo-finance-in-python 
+# def retrieve_hist_prices(ticker):
+# 	'''
+# 	Function heavily obtained from http://stackoverflow.com/questions/12433076/
+# 	download-history-stock-prices-automatically-from-yahoo-finance-in-python 
 
-	This function allows to retrieve all historical pricing data, which 
-	includes dividends and stock splits, for the Vanguard ETFs and mutual 
-	funds from Yahoo Finance, and then create appropriate tables with the 
-	data in sqlite3. 
+# 	This function allows to retrieve all historical pricing data, which 
+# 	includes dividends and stock splits, for the Vanguard ETFs and mutual 
+# 	funds from Yahoo Finance, and then create appropriate tables with the 
+# 	data in sqlite3. 
 
-	Input: 
-		ticker_list: List of Vanguard ETFs and mutual funds to obtain 
-			historical pricing data for
+# 	Input: 
+# 		ticker_list: List of Vanguard ETFs and mutual funds to obtain 
+# 			historical pricing data for
 
-	Outputs: 
-		sqlite3 tables with historical pricing data for each Vanguard 
-			ETF / mutual fund
-	'''
-	connection = sqlite3.connect("roboadvisor.db")
-	c = connection.cursor()
-	df = 'string'
-	# c.execute("DROP TABLE IF EXISTS " + ticker)
+# 	Outputs: 
+# 		sqlite3 tables with historical pricing data for each Vanguard 
+# 			ETF / mutual fund
+# 	'''
+# 	connection = sqlite3.connect("roboadvisor.db")
+# 	c = connection.cursor()
+# 	df = 'string'
+# 	# c.execute("DROP TABLE IF EXISTS " + ticker)
 
-	# Determine if ticker table exists in sqlite3
-	result = c.execute("select count(*) from sqlite_master where type='table' and name='" + ticker + "'")
-	exists = result.fetchone()[0]
+# 	# Determine if ticker table exists in sqlite3
+# 	result = c.execute("select count(*) from sqlite_master where type='table' and name='" + ticker + "'")
+# 	exists = result.fetchone()[0]
 
-	if exists == 1:
+# 	if exists == 1:
 
-		# To get only most recent data for table in roboadvisor.db
-		last_date = c.execute("SELECT Date FROM " + ticker + " ORDER BY date DESC LIMIT 1")
-		last_date = last_date.fetchone()[0]
-		last_date = datetime.datetime.strptime(last_date, '%Y-%m-%d %H:%M:%S')
+# 		# To get only most recent data for table in roboadvisor.db
+# 		last_date = c.execute("SELECT Date FROM " + ticker + " ORDER BY date DESC LIMIT 1")
+# 		last_date = last_date.fetchone()[0]
+# 		last_date = datetime.datetime.strptime(last_date, '%Y-%m-%d %H:%M:%S')
 
-		# Determine most recent price date of investment
-		current = DataReader(ticker, 'yahoo', datetime.datetime.now() - datetime.timedelta(days=5), datetime.datetime.now())
-		current_df = pandas.DataFrame(current)
-		current_df["Date"] = current_df.index
-		current_date = datetime.datetime.strptime(str(current_df["Date"][-1]), '%Y-%m-%d %H:%M:%S')
+# 		# Determine most recent price date of investment
+# 		current = DataReader(ticker, 'yahoo', datetime.datetime.now() - datetime.timedelta(days=5), datetime.datetime.now())
+# 		current_df = pandas.DataFrame(current)
+# 		current_df["Date"] = current_df.index
+# 		current_date = datetime.datetime.strptime(str(current_df["Date"][-1]), '%Y-%m-%d %H:%M:%S')
 
-		if last_date.date() < current_date.date():
-			df = DataReader(ticker,  'yahoo', last_date.date() + datetime.timedelta(days=1), datetime.datetime.now())
+# 		if last_date.date() < current_date.date():
+# 			df = DataReader(ticker,  'yahoo', last_date.date() + datetime.timedelta(days=1), datetime.datetime.now())
 	
-	# Get all historical data for a given investment if table not in roboadvisor.db
-	else:
-		df = DataReader(ticker,  'yahoo', datetime.datetime(1980, 1, 1), datetime.datetime.now())
+# 	# Get all historical data for a given investment if table not in roboadvisor.db
+# 	else:
+# 		df = DataReader(ticker,  'yahoo', datetime.datetime(1980, 1, 1), datetime.datetime.now())
 	
-	# Only update roboadvisor.db table if necessary
-	if type(df) != str:
-		dataframe = pandas.DataFrame(df)
-		dataframe["Date"] = dataframe.index
-		dataframe["Adj_Close"] = dataframe.pop("Adj Close")
+# 	# Only update roboadvisor.db table if necessary
+# 	if type(df) != str:
+# 		dataframe = pandas.DataFrame(df)
+# 		dataframe["Date"] = dataframe.index
+# 		dataframe["Adj_Close"] = dataframe.pop("Adj Close")
 
-		# Code from: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.to_sql.html
-		dataframe.to_sql(ticker, connection, if_exists = 'append', index = False)
+# 		# Code from: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.to_sql.html
+# 		dataframe.to_sql(ticker, connection, if_exists = 'append', index = False)
 
-	connection.commit()
-	connection.close
+# 	connection.commit()
+# 	connection.close
 
-
+#UPDATE IN CRON
 def create_each_potential_portfolio():
 	'''
 	Function to create historical prices for each possible recommended 
@@ -417,16 +417,15 @@ def create_table_worst_best_years():
 
 
 #######################################################################################333
-# if __name__=="__main__":
-#     num_args = len(sys.argv)
+if __name__=="__main__":
+	num_args = len(sys.argv)
 
-#     # if num_args != 2:
-#     #     print("usage: python3 " + sys.argv[0] + " <file name for speaker A> " +
-#     #           "<file name for speaker B>\n  <file name of text to identify> " +
-#     #           "<order>")
-#     #     sys.exit(0)
+	# if num_args != 2:
+	#     print("usage: python3 " + sys.argv[0] + " <file name for speaker A> " +
+	#           "<file name for speaker B>\n  <file name of text to identify> " +
+	#           "<order>")
+	#     sys.exit(0)
 
-#     ticker = sys.argv[1]
-#     retrieve_hist_prices(ticker)
-    
- 
+	#run the two functions
+	create_each_potential_portfolio()
+	create_table_worst_best_years() 
