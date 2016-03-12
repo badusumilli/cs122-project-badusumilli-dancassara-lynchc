@@ -2,10 +2,10 @@
 html, body {
     margin: 15px;
     padding: 10px;
-    font-family: "Garamond";
+    font-family: "Open Sans" ;
     border: 2px;
     border-color: rgb(0,0,0);
-    max-width: 900px;
+    width: 900px;
 
 }
 
@@ -33,7 +33,7 @@ div#graph {
 
 div.frame {
     margin: 15px;
-    padding: 15px;
+    padding: 0px;
     text-align: center;
     width: 900px;
 }
@@ -44,8 +44,9 @@ div.Row
 {
     display: table;
     width: 100%; /*Optional*/
-    table-layout: fixed; /*Optional*/
-    border-spacing: 10px; /*Optional*/
+    max-width: 900px;
+    table-layout: auto; 
+    border-spacing: 10px; 
 }
 
 div.Column

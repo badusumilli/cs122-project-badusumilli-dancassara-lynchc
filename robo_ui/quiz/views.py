@@ -91,6 +91,8 @@ def quiz_form(request):
 	if request.method == 'GET':
 		form = QuizForm(request.GET)
 		if form.is_valid():
+			if form.cleaned_data['home']:
+				return HttpResponseRedirect('.')
 			args = {}
 			args['q1'] = form.cleaned_data['how_old']
 			args['q2'] = form.cleaned_data['when_retire']

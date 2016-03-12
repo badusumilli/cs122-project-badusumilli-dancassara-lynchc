@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-"The worst 12-month return of the Aggressive Portfolio over the past 10 years was -42.77%. With this allocation, it is possible that a similar 12-month period may occur over the next 10+ years. If you would be overly uncomfortable seeing this drop in your wealth, click on the Less Aggressive link below."
-=======
 "The worst 12-month return of the Balanced Portfolio over the past 10 years was -36.52%. With this allocation, it is possible that a similar 12-month period may occur within the next 10+ years. In order to be a successful investor, it is important to stay invested, even during down markets, because it is impossible to predict how the market will move in the future. If you would be overly uncomfortable seeing this drop in your wealth, you may want to select a portfolio that takes on less risk. To do so, click on the Less Aggressive link below."
->>>>>>> e767312317a386c21632da8b394e6907732f1349

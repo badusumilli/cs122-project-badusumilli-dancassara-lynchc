@@ -1,5 +1,1 @@
-<<<<<<< HEAD
-"VEA: Vanguard FTSE Developed Markets ETF\nVBR: Vanguard Small-Cap Value ETF\nVSS: Vanguard FTSE All-World Ex-US Small Cap ETF\nBSV: Vanguard Short-Term Bond ETF\nBND: Vanguard Total Bond Market ETF\nVWO: Vanguard FTSE Emerging Markets ETF\nVTI: Vanguard Total Stock Market ETF\nBNDX: Vanguard Total International Bond ETF\nVNQI: Vanguard Global Ex-US Real Estate ETF\nVNQ: Vanguard REIT ETF"
-=======
-"VWO: Vanguard FTSE Emerging Markets ETF\nVBR: Vanguard Small-Cap Value ETF\nVNQI: Vanguard Global Ex-US Real Estate ETF\nVEA: Vanguard FTSE Developed Markets ETF\nBND: Vanguard Total Bond Market ETF\nVTI: Vanguard Total Stock Market ETF\nBSV: Vanguard Short-Term Bond ETF\nVSS: Vanguard FTSE All-World Ex-US Small Cap ETF\nBNDX: Vanguard Total International Bond ETF\nVNQ: Vanguard REIT ETF"
->>>>>>> e767312317a386c21632da8b394e6907732f1349
+"VWO: Vanguard FTSE Emerging Markets ETF\nVSS: Vanguard FTSE All-World Ex-US Small Cap ETF\nVNQI: Vanguard Global Ex-US Real Estate ETF\nVBR: Vanguard Small-Cap Value ETF\nVNQ: Vanguard REIT ETF\nBNDX: Vanguard Total International Bond ETF\nVEA: Vanguard FTSE Developed Markets ETF\nBSV: Vanguard Short-Term Bond ETF\nVTI: Vanguard Total Stock Market ETF\nBND: Vanguard Total Bond Market ETF"

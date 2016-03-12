@@ -1,14 +1,22 @@
 {% load staticfiles %}
 <!DOCTYPE html>
 <html>
+
     <head>
         <title>Personal Finance Quiz</title>
         <link rel="stylesheet" type="text/css" href="{% static "/static/main.css" %}" />
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Tangerine">
     </head>
+
     <body>
+
         <div id="header">
-            <h1>ACC Robo-Advisor Personal Finance Quiz</h1>
+            <table>
+                <input type="submit" name='home' value="Start Over"/>
+                <h1>ACC Robo-Advisor Personal Finance Quiz</h1>
+            </table>
         </div>
+
         <div class="frame">
             <form method="get">
                 {% csrf_token %}
@@ -16,7 +24,6 @@
                 {{ form }}
                 </table>
                 <input type="submit" value="Submit"  /> 
-                <!-- <input type="submit" class="btn btn-link" onclick="window.location.href='results'" value="Submit"> -->
                 </input>
             </form>
         </div>
