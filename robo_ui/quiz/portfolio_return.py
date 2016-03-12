@@ -109,28 +109,40 @@ def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 
 def create_descriptions(allocation, annualized_return, worst_change, best_change):
 
-	allocation_text = 'Your recommended investment allocation is ' + allocation
+	allocation_text = 'Your recommended investment allocation is ' + allocation \
+	+ '. This allocation was chosen for you based on your assessed risk tolerance. ' \
+	+ 'In investing, risk and related in very important ways. Below, you will see ' \
+	+ 'graphs illustrating what the returns of this portfolio have been over the previous ' \
+	+ 'ten years. While there are never any guarantees in investing, an investor should ' \
+	+ 'expect to have a similar experience over the next ten years. ' + allocation
 
 	etfs = []
 	for etf in ETF_NAMES.items():
 		etfs.append(etf[0] + ": " + etf[1])
 	etfs_text = '\n'.join(etfs)
 
-	performance_text = "We recommend that you invest in the " + allocation + " Portfolio. This portfolio consists of " \
-	+ "Vanguard ETFs, because Vanguard offers some of the best-performing ETFs at the lowest costs. " \
+	performance_text = "We recommend that you invest in the " + allocation \
+	+ " Portfolio. This portfolio consists of Vanguard ETFs, chosen because " \
+	+ "Vanguard offers some of the best-performing ETFs at the lowest costs. " \
 	+ "Additionally, Vanguard allows investors to buy and sell ETFs for free, allowing investors " \
 	+ "to avoid transaction costs. Over the past 10 years, this portfolio grew " \
-	+ annualized_return + " annually."
+	+ annualized_return + " annually. In order to expect a higher level of return " \
+	+ "over the next 10 years, you would need to take on more risk by increasing " \
+	+ "the portion of your invested wealth that is allocated in equities. "
 
 	worst_text = "The worst 12-month return of the " + allocation + " Portfolio over the past 10 years " \
 	+ "was " + worst_change + ". With this allocation, it is possible that a similar 12-month period may " \
-	+ "occur over the next 10+ years. If you would be overly uncomfortable seeing this drop in your " \
-	+ "wealth, click on the Less Aggressive link below."
+	+ "occur within the next 10+ years. In order to be a successful investor, it is important " \
+	+ "to stay invested, even during down markets, because it is impossible to predict how " \
+	+ "the market will move in the future. If you would be overly uncomfortable seeing this drop in your " \
+	+ "wealth, you may want to select a portfolio that takes on less risk. To do so, " \
+	+ "click on the Less Aggressive link below."
 
 	best_text = "The best 12-month return of the " + allocation + " Portfolio over the past 10 years " \
-	+ "was " + best_change + ". If you would like to see a greater potential increase in your portfolio, " \
-	+ "at the risk of also seeing a worse potential 12-month return than above, click on the More " \
-	+ "Aggressive link below."
+	+ "was " + best_change + ". If you would like increase the expected rate of return for your portfolio, " \
+	+ "and you believe that you can remain invested despite the risk of also seeing a worse " \
+	+ "potential 12-month return than shown above, click on the More " \
+	+ "Aggressive link below to see the historical performance of a more aggressive portfolio."
 
 	return allocation_text, etfs_text, performance_text, worst_text, best_text
 
