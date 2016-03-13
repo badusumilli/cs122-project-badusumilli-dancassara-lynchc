@@ -5,10 +5,13 @@
     <head>
         <title>Portfolio</title>
         <link rel="stylesheet" type="text/css" href="{% static "/static/main.css" %}" />
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open Sans" />
     </head>
     <body>
         <div id="header">
-            <h1>Your Investment Portfolio:</h1>
+            <h1 method="get">Your Investment Portfolio:
+                {% csrf_token %}
+                {{ profile }}</h1>
         </div>
 
         <div class="frame">
@@ -25,14 +28,16 @@
             </iframe>
         </div>
 
-         <div class="frame">
+         <div class="Column">
             <form method="get">
                 {% csrf_token %}
                 <table class="list">
-                {{ etfs_text }}
+                {{ etfs_list|join:"<br/>" }}
                 </table>
             </form>
         </div>
+
+        
 
         <div id="graph">
             <iframe width="800" height="600" frameborder="0" seamless="seamless" scrolling="no" src="https://plot.ly/~badusumilli/22.embed">
@@ -84,15 +89,10 @@
                 <form method="get">
                     <input type="submit" name="less" value="Less Agressive" />
                 </form>   
+                <form method="get">
+                    <input type="submit" name='home' value="Start Over"/>
+                </form>
             </table>
 
         </div>
-
-
-
-        {% if err %}
-        <div class ="error">
-            {{ err|safe }}
-        </div>
-        {% endif %}
 

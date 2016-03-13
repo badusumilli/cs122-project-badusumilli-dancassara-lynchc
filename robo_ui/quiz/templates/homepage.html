@@ -10,6 +10,17 @@
         <div id="header">
             <h1>Welcome to the UChicago Robo-Advisor!</h1>
         </div>
+
+         <div class="frame">
+            <form method="get">
+                {% csrf_token %}
+                <table class="form">
+                {{ explanation_text }}
+            </table>
+            </form>
+        </div>
+
+
         <div class="frame">
             <form method="get">
                 {% csrf_token %}

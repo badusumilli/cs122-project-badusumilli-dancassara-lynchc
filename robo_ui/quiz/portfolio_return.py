@@ -104,6 +104,9 @@ def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 	with open('quiz/temp_json_files/best_text.txt', 'w') as outfile: 
 		json.dump(best_text, outfile)	
 
+	with open('quiz/temp_json_files/profile.txt', 'w') as outfile:
+		json.dump(allocation, outfile)
+
 	# return etfs_text, performance_text, worst_text, best_text
 
 
@@ -111,15 +114,15 @@ def create_descriptions(allocation, annualized_return, worst_change, best_change
 
 	allocation_text = 'Your recommended investment allocation is ' + allocation \
 	+ '. This allocation was chosen for you based on your assessed risk tolerance. ' \
-	+ 'In investing, risk and related in very important ways. Below, you will see ' \
+	+ 'In investing, risk and return are related in very important ways. Below, you will see ' \
 	+ 'graphs illustrating what the returns of this portfolio have been over the previous ' \
 	+ 'ten years. While there are never any guarantees in investing, an investor should ' \
-	+ 'expect to have a similar experience over the next ten years. ' + allocation
+	+ 'expect to have a similar experience over the next ten years.'
 
 	etfs = []
 	for etf in ETF_NAMES.items():
 		etfs.append(etf[0] + ": " + etf[1])
-	etfs_text = '\n'.join(etfs)
+	etfs_text = ', '.join(etfs)
 
 	performance_text = "We recommend that you invest in the " + allocation \
 	+ " Portfolio. This portfolio consists of Vanguard ETFs, chosen because " \

@@ -10,6 +10,7 @@ import os
 from quiz import survey, portfolio_return
 import plotly.plotly as py
 import webbrowser
+import re
 #Homepage when one initially visits the site!
 def home(request):
 	context = {}
@@ -21,6 +22,10 @@ def home(request):
 			if form.cleaned_data['start_quiz']:
 				return HttpResponseRedirect('quiz_form')
 		print (context)
+	context['explanation_text'] = 'Our 11 question quiz will determine \
+	your investor profile, and then recommend an investment portfolio that \
+		matches your needs'
+	context['error_message'] = 'Each field is Required!'
 	context['form'] = form
 	return render(request, 'homepage.html', context)
 
@@ -30,21 +35,22 @@ def helper():
 
 	with open('quiz/temp_json_files/allocation_text.txt') as data_file:
 		allocation_text = json.load(data_file)
-		allocation_list = allocation_text.split()
-		profile = allocation_list[-1]
-		print (profile)
 	with open('quiz/temp_json_files/etfs_text.txt') as data_file:
 		etfs_text = json.load(data_file)
+		etfs_list = etfs_text.split(',')
+
 	with open('quiz/temp_json_files/performance_text.txt') as data_file:
 		performance_text = json.load(data_file)
 	with open('quiz/temp_json_files/worst_text.txt') as data_file:
 		worst_text = json.load(data_file)	
 	with open('quiz/temp_json_files/best_text.txt') as data_file:
 		best_text = json.load(data_file)
+	with open('quiz/temp_json_files/profile.txt') as data_file:
+		profile = json.load(data_file)
 
-	context['profile'] = profile
+	context['profile'] = profile 
 	context['allocation_text'] = allocation_text
-	context['etfs_text'] = etfs_text
+	context['etfs_list'] = etfs_list
 	context['performance_text'] = performance_text
 	context['worst_text'] = worst_text
 	context['best_text'] = best_text
@@ -57,6 +63,10 @@ def results(request):
 	profile = context['profile']
 	allocations = ['Very_Conservative', 'Conservative', 'Balanced', 'Aggressive', 'Very_Aggressive']
 	x = allocations.index(profile)
+	if request.method == 'GET':
+		if 'home' in request.GET:
+				return HttpResponseRedirect('/quiz')
+
 	if 'more' in request.GET:
 		if x != len(allocations)-1:
 			x = x + 1
@@ -89,22 +99,33 @@ def quiz_form(request):
 	context = {}
 	res = None
 	if request.method == 'GET':
+		if 'home' in request.GET:
+				return HttpResponseRedirect('/quiz')
+
 		form = QuizForm(request.GET)
 		if form.is_valid():
-			if form.cleaned_data['home']:
-				return HttpResponseRedirect('.')
+
 			args = {}
 			args['q1'] = form.cleaned_data['how_old']
 			args['q2'] = form.cleaned_data['when_retire']
 			args['q3'] = form.cleaned_data['marital_status']
-			args['q4'] = form.cleaned_data['annual_income']
+
+			args['q4'] = form.cleaned_data['annual_income'].replace(',', '')
+			args['q4'] = re.findall('[0-9]+', args['q4'])
+			args['q4'] = args['q4'][0]
+
 			args['q5'] = form.cleaned_data['income_stability']
 			args['q6'] = form.cleaned_data['main_goal']
 			args['q7'] = form.cleaned_data['most_important']
 			args['q8'] = form.cleaned_data['divest_in']
 			args['q9'] = form.cleaned_data['game_show']
 			args['q10'] = form.cleaned_data['stock_panic']
-			args['q11'] = int(form.cleaned_data['principal'])
+
+			args['q11'] = form.cleaned_data['principal'].replace(',', '')
+			args['q11'] = re.findall('[0-9]+', args['q11'])
+			args['q11'] = int(args['q11'][0])
+
+
 			print (args)
 			try:
 				profile = survey.risk_tolerance(args)
@@ -160,9 +181,7 @@ PANIC = _build_dropdown(['Sell everything', 'Sell some stocks', \
 class HomePage(forms.Form):
 	start_quiz = forms.CharField(
 		label='Please enter your name to begin the quiz',
-		help_text='Our 11 question quiz will determine your investor \
-		profile, and then recommend an investment portfolio that \
-		matches your needs',
+		help_text=None,
 		required=True)
 class MultipleChoice(forms.MultiValueField):
 	def __init__(self, *args, **kwargs):

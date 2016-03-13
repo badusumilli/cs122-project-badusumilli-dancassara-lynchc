@@ -5,15 +5,14 @@
     <head>
         <title>Personal Finance Quiz</title>
         <link rel="stylesheet" type="text/css" href="{% static "/static/main.css" %}" />
-        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Tangerine">
+        <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open Sans" />
     </head>
 
     <body>
 
         <div id="header">
             <table>
-                <input type="submit" name='home' value="Start Over"/>
-                <h1>ACC Robo-Advisor Personal Finance Quiz</h1>
+                <h1>UChicago Robo-Advisor Personal Finance Quiz</h1>
             </table>
         </div>
 
@@ -28,9 +27,24 @@
             </form>
         </div>
 
+        <div class="frame">
+            <form method="get">
+                <table>
+                    <input type="submit" name='home' value="Start Over"/>
+                </table>
+            </form>
+        </div>
+
         {% if err %}
         <div class ="error">
             {{ err|safe }}
         </div>
         {% endif %}
+
+
+        <div class="frame">
+            <form method="get">
+                {{ error_message }}
+            </form>
+        </div>
 

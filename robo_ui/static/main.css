@@ -5,7 +5,9 @@ html, body {
     font-family: "Open Sans" ;
     border: 2px;
     border-color: rgb(0,0,0);
-    width: 900px;
+    width: 960px;
+    vertical-align: bottom;
+    margin-bottom: 10px;
 
 }
 
@@ -13,8 +15,8 @@ div#header {
     background-image: url('http://images.fineartamerica.com/images/artworkimages/mediumlarge/1/chicago-skyline-evening-donald-schwartz.jpg');
     width: 900px;
     height: 268px;
-    margin: 0;
-    padding: 0;
+    margin: auto;
+    padding: 0px;
     
 }
 
@@ -32,7 +34,9 @@ div#graph {
 }
 
 div.frame {
-    margin: 15px;
+    margin: auto;
+    margin-top: 30px;
+    margin-bottom: 15px;
     padding: 0px;
     text-align: center;
     width: 900px;
@@ -49,10 +53,10 @@ div.Row
     border-spacing: 10px; 
 }
 
-div.Column
-{
+div.Column {
     display: table-cell;
-    background-color: red; /*Optional*/
+    text-align: center ;
+    width: 900px;
 }
 
 div.args {
@@ -81,23 +85,18 @@ fieldset legend {
     font-size: 12px;
 }
 
-input.query {
-    font-size: 18px;
-}
-
 label {
-    font-size: 16px;
+    font-size: 14px;
     font-family: Helvetica;
 }
-
-p.num_results {
-    margin-left: 5px;
-    font-size: 12px;
+table.Column {
+    text-align: center;
 }
 
 table.form {
     text-align: center;
     max-width: 900px;
+    padding: 20px;
 }
 
 table.form tr td,
@@ -107,7 +106,9 @@ table.form tr th {
 
 table.form input {
     margin-right: 5px;
+    padding: 0px;
 }
+
 
 table.form input#id_query {
     font-size: 18px;
@@ -145,6 +146,7 @@ table.courses tr:nth-child(even) {
     background: #eee;
 }
 
+
 ul.errorlist {
     margin: 0px;
     padding: 0px;
@@ -153,10 +155,10 @@ ul.errorlist {
 }
 
 ul.errorlist li {
-    font-size: 8px;
+    font-size: 0px;
     color: red;
     margin: 0px;
-    padding: 0px;
+    padding: px;
 }
 
 span.helptext {
