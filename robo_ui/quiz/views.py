@@ -33,6 +33,8 @@ def helper():
 	context = {}
 	res = None
 
+	with open('quiz/temp_json_files/profile.txt') as data_file:
+		profile = json.load(data_file)
 	with open('quiz/temp_json_files/allocation_text.txt') as data_file:
 		allocation_text = json.load(data_file)
 	with open('quiz/temp_json_files/etfs_text.txt') as data_file:
@@ -45,8 +47,6 @@ def helper():
 		worst_text = json.load(data_file)	
 	with open('quiz/temp_json_files/best_text.txt') as data_file:
 		best_text = json.load(data_file)
-	with open('quiz/temp_json_files/profile.txt') as data_file:
-		profile = json.load(data_file)
 
 	context['profile'] = profile 
 	context['allocation_text'] = allocation_text
@@ -54,6 +54,7 @@ def helper():
 	context['performance_text'] = performance_text
 	context['worst_text'] = worst_text
 	context['best_text'] = best_text
+	context['vanguard_link'] = 'https://investor.vanguard.com/etf/'
 
 	return context
 

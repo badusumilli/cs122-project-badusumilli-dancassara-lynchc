@@ -21,8 +21,8 @@ def risk_tolerance(args_from_ui):
 
 	q2 = args_from_ui['q2']
 
-	print()
-	print('Options: Single, Married, Other')
+	# print()
+	# print('Options: Single, Married, Other')
 	q3 = args_from_ui['q3']
 		#Options: Single, Married, Divorced
 		
@@ -44,8 +44,8 @@ def risk_tolerance(args_from_ui):
 		else:
 			score += 2
 
-	print()
-	print('Options: Strongly agree, somewhat agree, neutral, somewhat disagree, strongly disagree')
+	# print()
+	# print('Options: Strongly agree, somewhat agree, neutral, somewhat disagree, strongly disagree')
 	q5 = args_from_ui['q5']
 		#Options: Strongly agree, somewhat agree, neutral, somewhat disagree, strongly disagree	
 	if q5.lower() == "strongly agree":
@@ -60,8 +60,8 @@ def risk_tolerance(args_from_ui):
 		pass
 
 	####BEHAVIORAL QUESTIONS
-	print()
-	print('Options: Generating income, Growing wealth, Other')
+	# print()
+	# print('Options: Generating income, Growing wealth, Other')
 	q6 = args_from_ui['q6']
 		#Options: Generating income, Growing wealth, Other 
 		#Options: Savings, Retirement, Other
@@ -72,8 +72,8 @@ def risk_tolerance(args_from_ui):
 	else:
 		pass
 
-	print()
-	print('Options: maximizing gains, minimizing loses, both equally')
+	# print()
+	# print('Options: maximizing gains, minimizing loses, both equally')
 	q7 = args_from_ui['q7']
 		#Options: maximizing, minimizing, both equally
 	if q7.lower() == 'maximizing gains':
@@ -85,8 +85,8 @@ def risk_tolerance(args_from_ui):
 	else:
 		print('not an option')
 
-	print()
-	print('Options: A few months, 1-3 years, 3-5 Years, 5-10 Years, More than 10 years ')
+	# print()
+	# print('Options: A few months, 1-3 years, 3-5 Years, 5-10 Years, More than 10 years ')
 	q8 = args_from_ui['q8']
 		#Options: A few months, 1-3 years, 3-5 Years, 5-10 Years, More than 10 years 
 	if q8.lower() == 'a few months':
@@ -102,8 +102,8 @@ def risk_tolerance(args_from_ui):
 	else:
 		print('not an option')
 
-	print()
-	print('Options: 1000, 5000, 100000')
+	# print()
+	# print('Options: 1000, 5000, 100000')
 	q9 = args_from_ui['q9']
 		#Options: 1000, 5000, 100000
 	if q9 == '$1000 @ 100% chance':
@@ -115,8 +115,8 @@ def risk_tolerance(args_from_ui):
 	else:
 		print('not an option')
 
-	print()
-	print('Options: Sell everything, Sell some stocks, Do nothing, Buy more stocks')
+	# print()
+	# print('Options: Sell everything, Sell some stocks, Do nothing, Buy more stocks')
 	q10 = args_from_ui['q10']
 		#Options: Sell everything, Sell some stocks, Do nothing, Buy more stocks
 	if q10.lower() == 'sell everything':
@@ -144,5 +144,6 @@ def risk_tolerance(args_from_ui):
 		classification = 'Very_Aggressive'
 
 
+	print('calculating score')
 	return classification
 	

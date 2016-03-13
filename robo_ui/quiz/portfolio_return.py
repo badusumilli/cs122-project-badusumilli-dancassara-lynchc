@@ -107,45 +107,39 @@ def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 	with open('quiz/temp_json_files/profile.txt', 'w') as outfile:
 		json.dump(allocation, outfile)
 
-	# return etfs_text, performance_text, worst_text, best_text
-
 
 def create_descriptions(allocation, annualized_return, worst_change, best_change):
 
-	allocation_text = 'Your recommended investment allocation is ' + allocation \
-	+ '. This allocation was chosen for you based on your assessed risk tolerance. ' \
-	+ 'In investing, risk and return are related in very important ways. Below, you will see ' \
-	+ 'graphs illustrating what the returns of this portfolio have been over the previous ' \
-	+ 'ten years. While there are never any guarantees in investing, an investor should ' \
-	+ 'expect to have a similar experience over the next ten years.'
+	allocation_text = "This portfolio consists of Vanguard ETFs, chosen because " \
+	+ "Vanguard offers some of the best-performing ETFs at the lowest costs¹. " \
+	+ "This allocation was chosen for you based on your assessed risk tolerance. " \
+	+ "In order to expect a higher return " \
+	+ "over the next 10 years, you would need to take on more risk by increasing " \
+	+ "the portion of your invested wealth allocated in equities. " \
+	+ "Below are graphs illustrating how the portfolio performed over the previous " \
+	+ "10 years. While there are never any guarantees in investing, an investor can " \
+	+ "expect to have a similar experience over the next 10 years."
 
 	etfs = []
 	for etf in ETF_NAMES.items():
 		etfs.append(etf[0] + ": " + etf[1])
 	etfs_text = ', '.join(etfs)
 
-	performance_text = "We recommend that you invest in the " + allocation \
-	+ " Portfolio. This portfolio consists of Vanguard ETFs, chosen because " \
-	+ "Vanguard offers some of the best-performing ETFs at the lowest costs. " \
-	+ "Additionally, Vanguard allows investors to buy and sell ETFs for free, allowing investors " \
-	+ "to avoid transaction costs. Over the past 10 years, this portfolio grew " \
-	+ annualized_return + " annually. In order to expect a higher level of return " \
-	+ "over the next 10 years, you would need to take on more risk by increasing " \
-	+ "the portion of your invested wealth that is allocated in equities. "
+	performance_text = "Over the past 10 years, this portfolio grew " \
+	+ annualized_return + " annually." 
 
 	worst_text = "The worst 12-month return of the " + allocation + " Portfolio over the past 10 years " \
 	+ "was " + worst_change + ". With this allocation, it is possible that a similar 12-month period may " \
 	+ "occur within the next 10+ years. In order to be a successful investor, it is important " \
-	+ "to stay invested, even during down markets, because it is impossible to predict how " \
+	+ "to stay invested, even during down markets, because it is impossible to predict how or when " \
 	+ "the market will move in the future. If you would be overly uncomfortable seeing this drop in your " \
 	+ "wealth, you may want to select a portfolio that takes on less risk. To do so, " \
 	+ "click on the Less Aggressive link below."
 
 	best_text = "The best 12-month return of the " + allocation + " Portfolio over the past 10 years " \
-	+ "was " + best_change + ". If you would like increase the expected rate of return for your portfolio, " \
-	+ "and you believe that you can remain invested despite the risk of also seeing a worse " \
-	+ "potential 12-month return than shown above, click on the More " \
-	+ "Aggressive link below to see the historical performance of a more aggressive portfolio."
+	+ "was " + best_change + ". If you would like to increase the expected return of your portfolio, " \
+	+ "it is necessary to take on additional risk in your portfolio. If you think that you can tolerate" \
+	+ "a higher level of risk in your portfolio, click on the More Aggressive link below."
 
 	return allocation_text, etfs_text, performance_text, worst_text, best_text
 
