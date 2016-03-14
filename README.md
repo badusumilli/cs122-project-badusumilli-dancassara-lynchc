@@ -49,6 +49,12 @@ robo_ui/quiz/roboadvisor.db
 
 robo_ui: folder containing remaining relevant files for robo-advisor
 
+robo_ui/quiz: folder containing files and functions that are necessary 
+for running the quiz/using the survey
+
+robo_ui/quiz/survey.py: takes a user's responses to the online quiz 
+and returns a classification (suggested allocation)
+
 robo_ui/quiz/roboadvisor.db: sqlite3 database with all relevant historical 
 pricing data for the investments / portfolios
 

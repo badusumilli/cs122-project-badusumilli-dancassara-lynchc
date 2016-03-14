@@ -2,13 +2,27 @@
 
 
 def risk_tolerance(args_from_ui):
+	'''
+	Original Function, survey questions borrowed from several sources
+	including:
+		- https://www.wealthfront.com/questions 
+		- https://personal.vanguard.com/us/FundsInvQuestionnaire
+		- http://individual.ml.com/?id=15261_45434
 
-	score = 0
+	Inputs:
+		- args_from_ui: a dictionary with key,value pairs that correspond
+					to a user's responses to questions posed in the online
+					survey
+
+	Output:
+		- classification: a string indicating one of five allocations,
+		based on the user's risk score
+	'''
+
+	score = 0 #initialize score to 0
+
 	#####DEMOGRAPHIC QUESTIONS
-
-
-	score = 0
-	#####DEMOGRAPHIC QUESTIONS
+	#q1 = How old are you?
 	q1 = args_from_ui['q1']
 	if int(q1) <= 55:
 		if int(q1) <= 45:
@@ -19,8 +33,10 @@ def risk_tolerance(args_from_ui):
 		elif int(q1) > 45:
 			score += 2
 
+	#q2 = At what age do you plan to retire?
 	q2 = args_from_ui['q2']
 	gap = int(q2) - int(q1)
+	#relevant question is how long between now and retirement
 
 	if gap < 10:
 		score -= 1
@@ -37,10 +53,8 @@ def risk_tolerance(args_from_ui):
 							score += 1
 
 
-	# print()
-	# print('Options: Single, Married, Other')
+	#q3 = Marital status
 	q3 = args_from_ui['q3']
-		#Options: Single, Married, Divorced
 		
 	if q3.lower() == 'single':
 		score += 5
@@ -49,7 +63,7 @@ def risk_tolerance(args_from_ui):
 	else: 
 		pass
 
-	print()
+	#q4 = annual income
 	q4 = args_from_ui['q4']
 	if int(q4) >= 50000:
 		score += 3
@@ -58,10 +72,8 @@ def risk_tolerance(args_from_ui):
 			if int(q4) >= 100000:
 				score += 1.5
 			
-	# print()
-	# print('Options: Strongly agree, somewhat agree, neutral, somewhat disagree, strongly disagree')
+	#q5 = How secure are future income sources?
 	q5 = args_from_ui['q5']
-		#Options: Strongly agree, somewhat agree, neutral, somewhat disagree, strongly disagree	
 	if q5.lower() == "strongly agree":
 		score += 7
 	elif q5.lower() == "somewhat agree":
@@ -74,7 +86,7 @@ def risk_tolerance(args_from_ui):
 		score -= 2
 
 	####BEHAVIORAL QUESTIONS
-	
+	#q6 = what is your main goal?
 	q6 = args_from_ui['q6']
 	if q6.lower() == 'generating income':
 		score += 2
@@ -83,8 +95,8 @@ def risk_tolerance(args_from_ui):
 	else:
 		pass
 
+	#q7 = what is more important to you?
 	q7 = args_from_ui['q7']
-		#Options: maximizing, minimizing, both equally
 	if q7.lower() == 'maximizing gains':
 		score += 7
 	elif q7.lower() == 'minimizing loses':
@@ -94,9 +106,8 @@ def risk_tolerance(args_from_ui):
 	else:
 		print('not an option')
 
-
+	#q8 = timeline for using money
 	q8 = args_from_ui['q8']
-		#Options: A few months, 1-3 years, 3-5 Years, 5-10 Years, More than 10 years 
 	if q8.lower() == 'a few months':
 		score -= 2
 	elif q8.lower() == '1-3 years':
@@ -110,10 +121,8 @@ def risk_tolerance(args_from_ui):
 	else:
 		print('not an option')
 
-	# print()
-	# print('Options: 1000, 5000, 100000')
+	#q9 tests risk aversion -> tradeoff between expected value and certainty
 	q9 = args_from_ui['q9']
-		#Options: 1000, 5000, 100000
 	if q9 == '$1000 @ 100% chance':
 		score -= 2
 	elif q9 == '$5000 @ 50% chance':
@@ -123,10 +132,8 @@ def risk_tolerance(args_from_ui):
 	else:
 		print('not an option')
 
-	# print()
-	# print('Options: Sell everything, Sell some stocks, Do nothing, Buy more stocks')
+	#tests reaction to market downturns
 	q10 = args_from_ui['q10']
-		#Options: Sell everything, Sell some stocks, Do nothing, Buy more stocks
 	if q10.lower() == 'sell everything':
 		score -= 3
 	elif q10.lower() == 'sell some stocks':
