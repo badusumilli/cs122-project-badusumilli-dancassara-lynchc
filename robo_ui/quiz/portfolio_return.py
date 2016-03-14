@@ -1,4 +1,4 @@
-# CS122 Project: Dan Cassara, Connor Lynch, Bobby Adusumilli
+# Roboadvisor Project: Dan Cassara, Connor Lynch, Bobby Adusumilli
 
 # This file contains functions to create the interactive historical performance 
 # graphs using the Python package Plotly
@@ -70,7 +70,8 @@ def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
-	best_worst = c.execute("SELECT * FROM Best_Worst_Year WHERE Allocation = '" + allocation + "'")
+	best_worst = c.execute("SELECT * FROM Best_Worst_Year WHERE Allocation = '" \
+		+ allocation + "'")
 	bw = best_worst.fetchall()[0]
 	worst_change = bw[1]
 	worst_year_start_date = bw[2]
@@ -228,10 +229,10 @@ def allocation_bar_plotly(allocation):
 	)
 
 	fig = go.Figure(data = data, layout = layout)
-	plot_url = py.plot(fig, filename = 'User-Allocation')
+	plot_url = py.plot(fig, filename = 'User-Allocation', auto_open = False)
 
 
-def fund_performance_graph_plotly(allocation, wealth, hist_period = '10y', auto_open = False):
+def fund_performance_graph_plotly(allocation, wealth, hist_period = '10y'):
 	'''
 	Modified from https://plot.ly/python/line-charts/
 
