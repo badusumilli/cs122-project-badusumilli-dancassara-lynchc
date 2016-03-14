@@ -158,7 +158,6 @@ def quiz_form(request):
 			#pass args dict to survey.py for scoring 
 			try:
 				profile = survey.risk_tolerance(args)
-				print (type(profile), type(args['q11']))
 			except Exception as e:
 
 				print (e)
