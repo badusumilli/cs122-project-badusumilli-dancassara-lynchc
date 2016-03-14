@@ -1,9 +1,7 @@
 # CS122 Project: Dan Cassara, Connor Lynch, Bobby Adusumilli
 
-# This file contains functions that create the historical performance graphs using
-# the Python package Plotly
-
-# http://stackoverflow.com/questions/19356920/embed-plotly-graph-into-a-webpage-with-bottle
+# This file contains functions to create the interactive historical performance 
+# graphs using the Python package Plotly
 
 import datetime
 import sqlite3
@@ -13,11 +11,12 @@ import json
 import plotly.plotly as py
 import plotly.tools as tls
 import plotly.graph_objs as go
-# Sign-In Info found in: https://plot.ly/settings/api
+# To sign into Plotly: https://plot.ly/settings/api
 py.sign_in('badusumilli', 'lop4glzuu1')
 
 TIME_DICT = {'1y': 'One', '5y': 'Five', '10y': 'Ten'}
 
+# All of the ETFs that we recommend
 ETF_NAMES = {
 	'VTI': 'Vanguard Total Stock Market ETF', 
 	'VBR': 'Vanguard Small-Cap Value ETF',
@@ -53,24 +52,26 @@ ETF_ALLOCATION_DICT = {
 
 def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 	'''
+	Original function
+
 	Function to create necessary graphs for a user based on survey answers.
+	Also creates the necessary text that will display on results webpage. 
 
 	Inputs: 
 		allocation: our recommended allocation for a user (ex: 'Aggressive')
+		wealth: starting money that person can invest (ex: 1000)
 		hist_period: number of years for historical portfolio prices 
 			(ex: '10y')
-		wealth: starting money that person can invest (ex: 1000)
 
 	Outputs:  
-		annualized_return: annualized_return of user's recommended portfolio
-			over hist_period
-		list(ETF_NAMES.values()): Names of Vanguard ETFs
+		plotly graphs specific to the user
+		json files with the text necessary for the results webpage
 	'''
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
-	# worst_year_change, worst_year_start_date, worst_year_end_date, best_year_change, best_year_start_date, best_year_end_date = find_worst_and_best_year(allocation, hist_period)
-	best_worst = c.execute("SELECT * FROM Best_Worst_Year WHERE Allocation = '" + allocation + "'")
+	best_worst = c.execute("SELECT * FROM Best_Worst_Year WHERE Allocation = '" \
+		+ allocation + "'")
 	bw = best_worst.fetchall()[0]
 	worst_change = bw[1]
 	worst_year_start_date = bw[2]
@@ -79,16 +80,23 @@ def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 	best_year_start_date = bw[5]
 	best_year_end_date = bw[6]
 
+	# Create the 4 graphs for the website for the user's specific info
 	allocation_bar_plotly(allocation)
 	annualized_return = fund_performance_graph_plotly(allocation, wealth)
-	graph_worst_year_plotly(allocation, wealth, worst_year_start_date, worst_year_end_date)
-	graph_best_year_plotly(allocation, wealth, best_year_start_date, best_year_end_date)
+	graph_worst_year_plotly(allocation, wealth, worst_year_start_date, \
+		worst_year_end_date)
+	graph_best_year_plotly(allocation, wealth, best_year_start_date, \
+		best_year_end_date)
 
 	connection.commit()
 	connection.close
 
-	allocation_text, etfs_text, performance_text, worst_text, best_text = create_descriptions(allocation, annualized_return, worst_change, best_change)
+	# Create descriptions to be displayed on the website
+	allocation_text, etfs_text, performance_text, worst_text, best_text = \
+		create_descriptions(allocation, annualized_return, worst_change, \
+		best_change)
 
+		# Create json file with all of the text for results webpage
 	with open('quiz/temp_json_files/allocation_text.txt', 'w') as outfile: 
 		json.dump(allocation_text, outfile)
 
@@ -109,16 +117,39 @@ def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 
 
 def create_descriptions(allocation, annualized_return, worst_change, best_change):
+	'''
+	Original function
 
+	Create necessary description for results webpage for user
+
+	Inputs: 
+		allocation: specific allocation (ex: 'Aggressive')
+		annualized_return: string of annual return over past 10 years for 
+			the allocation (ex: '5.0%')
+		worst_change: string of worst 12-month return over the past 10 
+			years for the allocation (ex: '-50.0%')
+		best_change: string of worst 12-month return over the past 10 
+			years for the allocation (ex: '60.0%')
+
+	Outputs: 
+		allocation_text: Text for top of webpage explaining allocation
+		etfs_text: Names of each of the recommended ETFs
+		performance_text: Text of annualized performance of allocation 
+			over past ten years
+		worst_text: Text explaining worst 12-month period of allocation 
+			over past 10 years
+		best_text: Text explaining best 12-month period of allocation 
+			over past 10 years
+	'''
 	allocation_text = "This portfolio consists of Vanguard ETFs, chosen because " \
 	+ "Vanguard offers some of the best-performing ETFs at the lowest costs¹. " \
-	+ "This allocation was chosen for you based on your assessed risk tolerance. " \
-	+ "In order to expect a higher return " \
-	+ "over the next 10 years, you would need to take on more risk by increasing " \
-	+ "the portion of your invested wealth allocated in equities. " \
-	+ "Below are graphs illustrating how the portfolio performed over the previous " \
-	+ "10 years. While there are never any guarantees in investing, an investor can " \
-	+ "expect to have a similar experience over the next 10 years."
+	+ "This allocation was chosen for you based on your assessed risk " \
+	+ "tolerance. In order to expect a higher return over " \
+	+ "the next 10 years, you would need to take on more risk by increasing " \
+	+ "the portion of your invested wealth allocated in equities. Below " \
+	+ "are graphs illustrating how the portfolio performed over the previous " \
+	+ "10 years. While there are never any guarantees in investing, an investor " \
+	+ "can expect to have a similar experience over the next 10 years."
 
 	etfs = []
 	for etf in ETF_NAMES.items():
@@ -128,33 +159,39 @@ def create_descriptions(allocation, annualized_return, worst_change, best_change
 	performance_text = "Over the past 10 years, this portfolio grew " \
 	+ annualized_return + " annually." 
 
-	worst_text = "The worst 12-month return of the " + allocation + " Portfolio over the past 10 years " \
-	+ "was " + worst_change + ". With this allocation, it is possible that a similar 12-month period may " \
-	+ "occur within the next 10+ years. In order to be a successful investor, it is important " \
-	+ "to stay invested, even during down markets, because it is impossible to predict how or when " \
-	+ "the market will move in the future. If you would be overly uncomfortable seeing this drop in your " \
-	+ "wealth, you may want to select a portfolio that takes on less risk. To do so, " \
-	+ "click on the Less Aggressive link below."
+	worst_text = "The worst 12-month return of the " + allocation + " Portfolio " \
+	+ "over the past 10 years was " + worst_change + ". With this allocation, " \
+	+ "it is possible that a similar 12-month period may occur within the next " \
+	+ "10+ years. In order to be a successful investor, it is important " \
+	+ "to stay invested, even during down markets, because it is impossible to " \
+	+ "predict how or when the market will move in the future. If you would be " \
+	+ "overly uncomfortable seeing this drop in your wealth, you may want to " \
+	+ "select a portfolio that takes on less risk. To do so, click on the Less " \
+	+ "Aggressive link below."
 
-	best_text = "The best 12-month return of the " + allocation + " Portfolio over the past 10 years " \
-	+ "was " + best_change + ". If you would like to increase the expected return of your portfolio, " \
-	+ "it is necessary to take on additional risk in your portfolio. If you think that you can tolerate" \
-	+ "a higher level of risk in your portfolio, click on the More Aggressive link below."
+	best_text = "The best 12-month return of the " + allocation + " Portfolio " \
+	+ "over the past 10 years was " + best_change + ". If you would like to " \
+	+ "increase the expected return of your portfolio, it is necessary to " \
+	+ "take on additional risk in your portfolio. If you think that you can " \
+	+ "tolerate a higher level of risk in your portfolio, click on the More " \
+	+ "Aggressive link below."
 
 	return allocation_text, etfs_text, performance_text, worst_text, best_text
 
 
 def allocation_bar_plotly(allocation):
 	'''
+	Modified from https://plot.ly/python/bar-charts/
+
 	Function to create interactive bar graph of our recommended portfolio
-	allocation to a user using the Python package plotly. Code heavily
-	borrowed from https://plot.ly/python/bar-charts/
+	allocation to a user using the Python package plotly. 
 
 	Input: 
 		allocation: recommended allocation (ex: 'Aggressive')
 
 	Output: 
-		'User-Allocation': Interactive plotly bar graph of allocation
+		'User-Allocation': Interactive plotly bar graph of allocation.
+			First graph on results webpage
 	'''
 	funds = list(ETF_ALLOCATION_DICT[allocation].keys())
 	percentages = [x * 100 for x in ETF_ALLOCATION_DICT[allocation].values()]
@@ -193,15 +230,15 @@ def allocation_bar_plotly(allocation):
 
 	fig = go.Figure(data = data, layout = layout)
 	plot_url = py.plot(fig, filename = 'User-Allocation', auto_open=False)
-	# tls.get_embed(py.plot_mpl(fig, filename='User-Allocation'))
 
 
 def fund_performance_graph_plotly(allocation, wealth, hist_period = '10y'):
 	'''
-	Function to create interactive line graph of performance of user's 
+	Modified from https://plot.ly/python/line-charts/
+
+	Create interactive line graph of performance of user's 
 	wealth invested in recommended allocation over past hist_period years
-	using Python package plotly. Code heavily borrowed from 
-	https://plot.ly/python/line-charts/
+	using Python package plotly.
 
 	Inputs: 
 		allocation: recommended allocation (ex: 'Aggressive')
@@ -217,11 +254,14 @@ def fund_performance_graph_plotly(allocation, wealth, hist_period = '10y'):
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
-	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF;")
+	# Get portfolio prices for proper hist_period and allocation
+	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + \
+		TIME_DICT[hist_period] + "_Year_PF;")
 	prices = pf_prices.fetchall()
 
 	# Get dates in datetime format for label purposes
-	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
+	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") \
+		for x in prices]
 	price_list = [x[1] * wealth for x in prices]
 
 	data = [
@@ -243,10 +283,11 @@ def fund_performance_graph_plotly(allocation, wealth, hist_period = '10y'):
 	)
 
 	fig = go.Figure(data = data, layout = layout)
-	plot_url = py.plot(fig, filename = 'User-Portfolio-Performance', auto_open=False)
-	# tls.get_embed(py.plot_mpl(fig, filename='User-Portfolio-Performance'))
+	plot_url = py.plot(fig, filename = 'User-Portfolio-Performance', \
+		auto_open=False)
 
-	annualized_return = (((price_list[-1] / price_list[0]) ** (1 / int(hist_period[:-1]))) - 1) * 100
+	annualized_return = (((price_list[-1] / price_list[0]) ** \
+		(1 / int(hist_period[:-1]))) - 1) * 100
 	
 	connection.commit()
 	connection.close
@@ -256,10 +297,11 @@ def fund_performance_graph_plotly(allocation, wealth, hist_period = '10y'):
 
 def graph_worst_year_plotly(allocation, wealth, worst_year_start_date, worst_year_end_date, hist_period = '10y'):
 	'''
-	Function to create interative line graph of person's decrease in wealth 
+	Modified from https://plot.ly/python/line-charts/
+
+	Create interative line graph of person's decrease in wealth 
 	over worst 12-month period over past hist_period years using Python 
-	package plotly. Code heavily borrowed from 
-	https://plot.ly/python/line-charts/
+	package plotly. 
 
 	Inputs: 
 		allocation: recommended allocation (ex: 'Aggressive')
@@ -277,12 +319,14 @@ def graph_worst_year_plotly(allocation, wealth, worst_year_start_date, worst_yea
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
-	# worst_year_change, worst_year_start_date, worst_year_end_date, best_year_change, best_year_start_date, best_year_end_date = find_worst_and_best_year(allocation, hist_period)
-	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF WHERE Date >= '" + worst_year_start_date + "' AND Date <= '" + worst_year_end_date + "';")
+	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + \
+		TIME_DICT[hist_period] + "_Year_PF WHERE Date >= '" + \
+		worst_year_start_date + "' AND Date <= '" + worst_year_end_date + "';")
 	prices = pf_prices.fetchall()
 
 	# Get dates in datetime format
-	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
+	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") \
+		for x in prices]
 	price_list = [(x[1] / prices[0][1]) * wealth for x in prices]
 
 	data = [
@@ -305,21 +349,18 @@ def graph_worst_year_plotly(allocation, wealth, worst_year_start_date, worst_yea
 
 	fig = go.Figure(data = data, layout = layout)
 	plot_url = py.plot(fig, filename = 'User-Worst-Year', auto_open=False)
-	# tls.get_embed(py.plot(fig, filename='User-Worst-Year'))
 
 	connection.commit()
 	connection.close
 
-	# worst_return = ((price_list[-1] / price_list[0]) - 1) * 100
-	# return str("{0:.2f}".format(worst_return)) + "%"
-
 
 def graph_best_year_plotly(allocation, wealth, best_year_start_date, best_year_end_date, hist_period = '10y'):
 	'''
+	Modified from https://plot.ly/python/line-charts/
+
 	Function to create interative line graph of user's increase in wealth 
 	over best 12-month period over past hist_period years using Python 
-	package plotly. Code heavily borrowed from 
-	https://plot.ly/python/line-charts/
+	package plotly. 
 
 	Inputs: 
 		allocation: recommended allocation (ex: 'Aggressive')
@@ -337,12 +378,15 @@ def graph_best_year_plotly(allocation, wealth, best_year_start_date, best_year_e
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
-	# worst_year_change, worst_year_start_date, worst_year_end_date, best_year_change, best_year_start_date, best_year_end_date = find_worst_and_best_year(allocation, hist_period)
-	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + TIME_DICT[hist_period] + "_Year_PF WHERE Date >= '" + best_year_start_date + "' AND Date <= '" + best_year_end_date + "';")
+	# Get portfolio prices for proper hist_period and allocation
+	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + \
+		TIME_DICT[hist_period] + "_Year_PF WHERE Date >= '" + \
+		best_year_start_date + "' AND Date <= '" + best_year_end_date + "';")
 	prices = pf_prices.fetchall()
 
 	# Get dates in datetime format
-	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") for x in prices]
+	date_list = [datetime.datetime.strptime(x[0], "%Y-%m-%d %H:%M:%S") \
+		for x in prices]
 	price_list = [(x[1] / prices[0][1]) * wealth for x in prices]
 
 	data = [
@@ -365,10 +409,7 @@ def graph_best_year_plotly(allocation, wealth, best_year_start_date, best_year_e
 
 	fig = go.Figure(data = data, layout = layout)
 	plot_url = py.plot(fig, filename = 'User-Best-Year', auto_open=False)
-	# tls.get_embed(py.plot(fig, filename='User-Best-Year'))
 
 	connection.commit()
 	connection.close
 
-	# best_return = ((price_list[-1] / price_list[0]) - 1) * 100
-	# return str("{0:.2f}".format(best_return)) + "%"
