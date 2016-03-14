@@ -13,6 +13,10 @@ import webbrowser
 import re
 #Homepage when one initially visits the site!
 def home(request):
+	"""
+	Generates the homepage for the app, using homepage.html
+
+	"""
 	context = {}
 	res = None
 	if request.method == 'GET':
@@ -22,6 +26,7 @@ def home(request):
 			if form.cleaned_data['start_quiz']:
 				return HttpResponseRedirect('quiz_form')
 		print (context)
+	#create dictionary for text displayed on homepage 
 	context['explanation_text'] = 'Our 11 question quiz will determine \
 	your investor profile, and then recommend an investment portfolio that \
 		matches your needs'
@@ -30,9 +35,15 @@ def home(request):
 	return render(request, 'homepage.html', context)
 
 def helper():
+	"""
+	Called by results(), function reads in stored json text and \
+	generates the context dict to go to results.html
+
+	"""
 	context = {}
 	res = None
 
+	#read saved information from portfolio_return.py
 	with open('quiz/temp_json_files/profile.txt') as data_file:
 		profile = json.load(data_file)
 	with open('quiz/temp_json_files/allocation_text.txt') as data_file:
@@ -48,6 +59,7 @@ def helper():
 	with open('quiz/temp_json_files/best_text.txt') as data_file:
 		best_text = json.load(data_file)
 
+	#adds text to the context dict for results.html
 	context['profile'] = profile 
 	context['allocation_text'] = allocation_text
 	context['etfs_list'] = etfs_list
@@ -59,6 +71,13 @@ def helper():
 	return context
 
 def results(request):
+	"""
+	Generates the page to display the information and graphs for\
+	a given investment portfolio. calls information from saved json files \
+	and fixed urls using helper(), and provides the option to go to more or \
+	less agressive profiles. Generates the page from results.html
+
+	"""
 	
 	context = helper()
 	profile = context['profile']
@@ -67,7 +86,7 @@ def results(request):
 	if request.method == 'GET':
 		if 'home' in request.GET:
 				return HttpResponseRedirect('/quiz')
-
+	#loads the results page for the next most agressive profile
 	if 'more' in request.GET:
 		if x != len(allocations)-1:
 			x = x + 1
@@ -78,7 +97,7 @@ def results(request):
 			return render(request, 'results.html', context)
 		else:
 			return HttpResponse("Can't get more Agressive!")
-
+	#loads the results page for the next least agressive profile
 	if 'less' in request.GET:
 		if x != 0:
 			x = x - 1
@@ -97,12 +116,22 @@ def results(request):
 
 #Classes and functions to generate the quiz form and output results
 def quiz_form(request):
+	"""
+	View function for the quiz form page. Generates an 11 question quiz \
+	with charfield and choicefield values, then passes the responses to \
+	survey.py for scoring, the profile returned by the survey function \
+	is passed to portfolio_return.py for graph and text generation. 
+
+	"""
 	context = {}
 	res = None
+	#generate web form
 	if request.method == 'GET':
+		#links back to homepage to start over
 		if 'home' in request.GET:
 				return HttpResponseRedirect('/quiz')
-
+		#check to see if the form has been filled out
+		#clean values and create args dict
 		form = QuizForm(request.GET)
 		if form.is_valid():
 
@@ -126,22 +155,23 @@ def quiz_form(request):
 			args['q11'] = re.findall('[0-9]+', args['q11'])
 			args['q11'] = int(args['q11'][0])
 
-
-			print (args)
+			#pass args dict to survey.py for scoring 
 			try:
 				profile = survey.risk_tolerance(args)
 				print (type(profile), type(args['q11']))
 			except Exception as e:
 
 				print (e)
-		
+			#pass profile from survey.py to portfolio_return.py for \
+			#text and graph generation
 			try:
 				portfolio_return.create_graphs_and_text(profile, args['q11'])
 			except Exception as e:
 				print (e)
-
+			#load results page
 			return HttpResponseRedirect('results')
-
+	#if the form was not filled out/not properly filled out, reject the \
+	#submission and re-load the page
 	context['form'] = form
 	return render(request, 'index.html', context)
 
@@ -163,7 +193,7 @@ def _build_dropdown(options):
 	in options]
 
 
-#Dropdown configuration lists
+#Dropdown configuration lists, correspond to keys in survey.py
 MARRAIGE = _build_dropdown(['Single', 'Married', 'Other'])
 STABILITY = _build_dropdown(['Strongly agree', 'Somewhat agree',\
  'Neutral','Somewhat disagree', 'Strongly disagree'])
@@ -180,20 +210,20 @@ PANIC = _build_dropdown(['Sell everything', 'Sell some stocks', \
 
 
 class HomePage(forms.Form):
+	"""
+	Class to generate the homepage input form, links to the home function.
+	"""
 	start_quiz = forms.CharField(
 		label='Please enter your name to begin the quiz',
 		help_text=None,
 		required=True)
-class MultipleChoice(forms.MultiValueField):
-	def __init__(self, *args, **kwargs):
-		fields=(forms.ChoiceField(label=None, choices=options,\
-			required=True))
-		super(MultipleChoice, self).__init__(
-			fields=fields, *args, **kwargs)
-
-
 
 class QuizForm(forms.Form):
+	"""
+	Class to generate the quiz form at /quiz/quiz_form, links to the \
+	quiz_form function
+
+	"""
 	how_old = forms.CharField(
 		label='1. How old are you?',
 		help_text='Please enter a number between 1 and 100',
