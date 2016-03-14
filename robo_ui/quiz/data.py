@@ -114,7 +114,7 @@ def create_table(hist_period):
 	hist_date = datetime.datetime.now().date()
 	hist_date_old = hist_date.replace(year = hist_date.year - \
 		int(hist_period[:-1]))
-	# for '10y' data:
+	# for '10y' data
 	hist_date_new = hist_date.replace(year = hist_date.year - \
 		int(hist_period[:-1]) + 5)
 
@@ -123,6 +123,7 @@ def create_table(hist_period):
 			"_Year_Prices")
 		create_statement = "CREATE TABLE " + TIME_DICT[hist_period] + \
 			"_Year_Prices ("
+
 		create_statement, sql_query = create_sql_statements(ALLOCATION_LIST, \
 			hist_period, hist_date_old, hist_date_new, create_statement)
 		c.execute(create_statement)
@@ -136,6 +137,7 @@ def create_table(hist_period):
 			"_Year_Prices_Old")
 		create_statement_old = "CREATE TABLE " + TIME_DICT[hist_period] + \
 			"_Year_Prices_Old ("
+
 		create_statement_old, sql_query_old = create_sql_statements\
 			(HISTORICAL_LIST, hist_period, hist_date_old, hist_date_new, \
 			create_statement_old)
@@ -364,10 +366,11 @@ def find_worst_and_best_year(allocation, hist_period = '10y'):
 			+ "' ORDER BY Date DESC LIMIT 1;")
 		next_price = next_year_price.fetchone()[0]
 		
-		# In case next_price yields no price (shouldn't happen, but possible)
+		# In case next_price yields no price
 		if next_price != []: 
 			price_change = ((next_price - price_list[date]) / price_list[date]) \
 				* 100
+
 			if price_change < worst_year_change: 
 				worst_year_change = price_change
 				worst_year_start_date = date_list[date].strftime("%Y-%m-%d %H:%M:%S")
@@ -412,10 +415,10 @@ def create_table_worst_best_years():
 		worst_year_change, worst_year_start_date, worst_year_end_date, \
 			best_year_change, best_year_start_date, best_year_end_date = \
 		find_worst_and_best_year(allocation)
-		c.execute("INSERT INTO Best_Worst_Year VALUES ('" + allocation + "', '" + \
-			worst_year_change + "', '" + worst_year_start_date + "', '" + \
-			worst_year_end_date + "', '" + best_year_change + "', '" + \
-			best_year_start_date + "', '" + best_year_end_date + "')")
+		c.execute("INSERT INTO Best_Worst_Year VALUES ('" + allocation + "', '" \
+			+ worst_year_change + "', '" + worst_year_start_date + "', '" \
+			+ worst_year_end_date + "', '" + best_year_change + "', '" \
+			+ best_year_start_date + "', '" + best_year_end_date + "')")
 
 	connection.commit()
 	connection.close

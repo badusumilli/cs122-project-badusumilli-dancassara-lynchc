@@ -70,8 +70,7 @@ def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 	connection = sqlite3.connect("roboadvisor.db")
 	c = connection.cursor()
 
-	best_worst = c.execute("SELECT * FROM Best_Worst_Year WHERE Allocation = '" \
-		+ allocation + "'")
+	best_worst = c.execute("SELECT * FROM Best_Worst_Year WHERE Allocation = '" + allocation + "'")
 	bw = best_worst.fetchall()[0]
 	worst_change = bw[1]
 	worst_year_start_date = bw[2]
@@ -96,7 +95,7 @@ def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 		create_descriptions(allocation, annualized_return, worst_change, \
 		best_change)
 
-		# Create json file with all of the text for results webpage
+	# Create json file with all of the text for results webpage
 	with open('quiz/temp_json_files/allocation_text.txt', 'w') as outfile: 
 		json.dump(allocation_text, outfile)
 
@@ -229,10 +228,10 @@ def allocation_bar_plotly(allocation):
 	)
 
 	fig = go.Figure(data = data, layout = layout)
-	plot_url = py.plot(fig, filename = 'User-Allocation', auto_open=False)
+	plot_url = py.plot(fig, filename = 'User-Allocation')
 
 
-def fund_performance_graph_plotly(allocation, wealth, hist_period = '10y'):
+def fund_performance_graph_plotly(allocation, wealth, hist_period = '10y', auto_open = False):
 	'''
 	Modified from https://plot.ly/python/line-charts/
 
@@ -284,7 +283,7 @@ def fund_performance_graph_plotly(allocation, wealth, hist_period = '10y'):
 
 	fig = go.Figure(data = data, layout = layout)
 	plot_url = py.plot(fig, filename = 'User-Portfolio-Performance', \
-		auto_open=False)
+		auto_open = False)
 
 	annualized_return = (((price_list[-1] / price_list[0]) ** \
 		(1 / int(hist_period[:-1]))) - 1) * 100
@@ -348,7 +347,7 @@ def graph_worst_year_plotly(allocation, wealth, worst_year_start_date, worst_yea
 	)
 
 	fig = go.Figure(data = data, layout = layout)
-	plot_url = py.plot(fig, filename = 'User-Worst-Year', auto_open=False)
+	plot_url = py.plot(fig, filename = 'User-Worst-Year', auto_open = False)
 
 	connection.commit()
 	connection.close
@@ -408,7 +407,7 @@ def graph_best_year_plotly(allocation, wealth, best_year_start_date, best_year_e
 	)
 
 	fig = go.Figure(data = data, layout = layout)
-	plot_url = py.plot(fig, filename = 'User-Best-Year', auto_open=False)
+	plot_url = py.plot(fig, filename = 'User-Best-Year', auto_open = False)
 
 	connection.commit()
 	connection.close
