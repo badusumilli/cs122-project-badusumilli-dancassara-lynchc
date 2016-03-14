@@ -1,4 +1,4 @@
-# Roboadvisor Project: Dan Cassara, Connor Lynch, Bobby Adusumilli
+# Robo-advisor Project: Dan Cassara, Connor Lynch, Bobby Adusumilli
 
 # This file contains functions to create tables in roboadvisor.db of 
 # historical performance for each potential recommended portfolio. 

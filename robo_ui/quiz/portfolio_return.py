@@ -1,4 +1,4 @@
-# Roboadvisor Project: Dan Cassara, Connor Lynch, Bobby Adusumilli
+# Robo-advisor Project: Dan Cassara, Connor Lynch, Bobby Adusumilli
 
 # This file contains functions to create the interactive historical performance 
 # graphs using the Python package Plotly
