@@ -87,10 +87,6 @@ def retrieve_hist_prices(ticker):
 if __name__=="__main__":
     num_args = len(sys.argv)
 
-    # if num_args != 2:
-    #     print("error getting data")
-    #     sys.exit(0)
-
     ticker = sys.argv[1]
     retrieve_hist_prices(ticker)
     

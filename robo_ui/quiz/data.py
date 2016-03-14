@@ -428,10 +428,6 @@ def create_table_worst_best_years():
 if __name__=="__main__":
 	num_args = len(sys.argv)
 
-	# if num_args != 2:
-	#     print("error updating allocation tables")
-	#     sys.exit(0)
-
 	#run the two functions
 	create_each_potential_portfolio()
 	create_table_worst_best_years() 

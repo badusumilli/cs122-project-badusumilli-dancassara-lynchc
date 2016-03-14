@@ -49,6 +49,8 @@ ETF_ALLOCATION_DICT = {
 	'BND': 0.00, 'BSV': 0.00, 'BNDX': 0.00}
 }
 
+DB = "quiz/roboadvisor.db"
+
 
 def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 	'''
@@ -67,7 +69,7 @@ def create_graphs_and_text(allocation, wealth, hist_period ='10y'):
 		plotly graphs specific to the user
 		json files with the text necessary for the results webpage
 	'''
-	connection = sqlite3.connect("roboadvisor.db")
+	connection = sqlite3.connect(DB)
 	c = connection.cursor()
 
 	best_worst = c.execute("SELECT * FROM Best_Worst_Year WHERE Allocation = '" \
@@ -251,7 +253,7 @@ def fund_performance_graph_plotly(allocation, wealth, hist_period = '10y'):
 			person's growth in wealth of recommended allocation over 
 			past hist_period years
 	'''
-	connection = sqlite3.connect("roboadvisor.db")
+	connection = sqlite3.connect(DB)
 	c = connection.cursor()
 
 	# Get portfolio prices for proper hist_period and allocation
@@ -316,7 +318,7 @@ def graph_worst_year_plotly(allocation, wealth, worst_year_start_date, worst_yea
 			12-month performance of user's wealth with recommended 
 			allocation
 	'''
-	connection = sqlite3.connect("roboadvisor.db")
+	connection = sqlite3.connect(DB)
 	c = connection.cursor()
 
 	pf_prices = c.execute("SELECT * FROM " + allocation + "_" + \
@@ -375,7 +377,7 @@ def graph_best_year_plotly(allocation, wealth, best_year_start_date, best_year_e
 			12-month performance of user's wealth with recommended 
 			allocation
 	'''
-	connection = sqlite3.connect("roboadvisor.db")
+	connection = sqlite3.connect(DB)
 	c = connection.cursor()
 
 	# Get portfolio prices for proper hist_period and allocation
