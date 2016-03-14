@@ -102,8 +102,8 @@ def create_table(hist_period):
 			(ex: '10y')
 
 	Outputs: 
-		sqlite3 table(s) with normalized historical prices of all Vanguard ETFs / 
-			mutual funds for given hist_period. For hist_period = '10y', 
+		sqlite3 table(s) with normalized historical prices of all Vanguard 
+			ETFs / mutual funds for given hist_period. For hist_period = '10y', 
 			since not all Vanguard ETF / mutual fund data goes back 10 
 			years, we are calculating return info through a manipulated
 			process with the data we have. 
@@ -112,9 +112,10 @@ def create_table(hist_period):
 	c = connection.cursor()
 
 	hist_date = datetime.datetime.now().date()
+	# Start date of relevant data
 	hist_date_old = hist_date.replace(year = hist_date.year - \
 		int(hist_period[:-1]))
-	# for '10y' data
+	# for '10y' data. Gives middle 5 year date
 	hist_date_new = hist_date.replace(year = hist_date.year - \
 		int(hist_period[:-1]) + 5)
 
@@ -155,8 +156,8 @@ def create_table(hist_period):
 			(ALLOCATION_LIST, hist_period, hist_date_new, hist_date_new, \
 			create_statement_new)
 		c.execute(create_statement_new)
-		c.execute("INSERT INTO " + TIME_DICT[hist_period] + "_Year_Prices_New " \
-			+ sql_query_new)
+		c.execute("INSERT INTO " + TIME_DICT[hist_period] + \
+			"_Year_Prices_New " + sql_query_new)
 
 	connection.commit()
 	connection.close
@@ -362,23 +363,25 @@ def find_worst_and_best_year(allocation, hist_period = '10y'):
 		next_year_date = date_list[date] + datetime.timedelta(days = 365)
 		next_year_date = next_year_date.strftime("%Y-%m-%d %H:%M:%S")
 		next_year_price = c.execute("SELECT PF_Price FROM " + allocation + "_" \
-			+ TIME_DICT[hist_period] + "_Year_PF WHERE Date < '" + next_year_date \
-			+ "' ORDER BY Date DESC LIMIT 1;")
+			+ TIME_DICT[hist_period] + "_Year_PF WHERE Date < '" + \
+			next_year_date + "' ORDER BY Date DESC LIMIT 1;")
 		next_price = next_year_price.fetchone()[0]
 		
 		# In case next_price yields no price
 		if next_price != []: 
-			price_change = ((next_price - price_list[date]) / price_list[date]) \
-				* 100
+			price_change = ((next_price - price_list[date]) / \
+				price_list[date]) * 100
 
 			if price_change < worst_year_change: 
 				worst_year_change = price_change
-				worst_year_start_date = date_list[date].strftime("%Y-%m-%d %H:%M:%S")
+				worst_year_start_date = \
+					date_list[date].strftime("%Y-%m-%d %H:%M:%S")
 				worst_year_end_date = next_year_date
 
 			if price_change > best_year_change: 
 				best_year_change = price_change
-				best_year_start_date = date_list[date].strftime("%Y-%m-%d %H:%M:%S")
+				best_year_start_date = \
+					date_list[date].strftime("%Y-%m-%d %H:%M:%S")
 				best_year_end_date = next_year_date
 
 	worst_year_change = str("{0:.2f}".format(worst_year_change)) + "%"
@@ -427,10 +430,6 @@ def create_table_worst_best_years():
 #######################################################################################333
 if __name__=="__main__":
 	num_args = len(sys.argv)
-
-	# if num_args != 2:
-	#     print("error updating allocation tables")
-	#     sys.exit(0)
 
 	#run the two functions
 	create_each_potential_portfolio()
