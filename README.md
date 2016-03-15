@@ -8,7 +8,10 @@ https://github.com/badusumilli/cs122-project-badusumilli-dancassara-lynchc/
 pip3 install --user plotly
 
 
-
+INSTRUCTIONS FOR RUNNING CODE:
+In order to start the server and access the wesbsite, run
+"python3 manage.py runserver" in the terminal from the folder
+cs122-project-badusumilli-dancassara-lynchc/robo_ui
 
 
 DOCUMENTATION OF CODE OWNERSHIP: 
